@@ -1,0 +1,10 @@
+{
+"env": {
+	"local": {
+		"db": "http://localhost:5984/locationtracker"
+	},
+	"remote": {
+		"db": "http://rajsingh:genjisan@rajsingh.cloudant.com/locationtracker"
+	}
+}
+}

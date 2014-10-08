@@ -1,0 +1,39 @@
+<!-- Listing 2 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Location Tracking Geo location demo</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  </head>
+  <body>
+  	<div class="container-fluid">
+  		<h1>Location Capture</h1>
+  		<div style="background-color:#72C7E7;padding:12px">
+  			<h4>longitude: <span id="x">not recording...</span></h4>
+  			<h4>latitude: <span id="y">not recording...</span></h4>
+  			<hr/>
+			<p>
+				<button id="starter" class="btn btn-danger" onclick="startWatch()">Capture Location</button>
+			</p>
+			<p>
+	  			<button id="stopper" class="btn btn-danger" onclick="stopWatch()" disabled>Stop Capture</button>
+			</p>
+			<p>
+				<button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save to Cloudant</button>
+			</p>
+			<p id="message"></div>
+  		</div>
+  	</div>
+	<script>
+    function _p8(s) {
+        var p = (Math.random().toString(16)+"000000000").substr(2,8);
+        return s ? "-" + p.substr(0,4) + "-" + p.substr(4,4) : p ;
+    }
+    var g = _p8() + _p8(true) + _p8(true) + _p8();
+	// g = Number(Math.round(1.123452789+'e'+5)+'e-'+5);
+	document.getElementById('message').innerHTML = g;
+	</script>
+  </body>
+</html>

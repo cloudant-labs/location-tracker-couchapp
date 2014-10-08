@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Location Tracking Geo location demo</title>
+    <!-- link rel="stylesheet" href="style/main.css" type="text/css" -->
+    <link rel="stylesheet" href="style/bootstrap.css" type="text/css">
+	<script src="script/pouchdb.js" type="text/javascript"></script>
+  </head>
+  <body>
+  	<div class="container-fluid">
+		<div>
+  			<img src="cloudant_ibm.png" style="float:right">
+			<h1>Location Capture</h1>
+		</div>
+  		<!-- <p>Allow this page to use your location and see the coordinates change below. Coordinates are stored locally in <a href="http://pouchdb.com" target="_new">PouchDB</a>, then replicated to the cloud in a <a href="http://cloudant.com" target="_new">Cloudant</a> database at <a href="http://rajsingh.cloudant.com/locationtracker/_all_docs">http://rajsingh.cloudant.com/locationtracker</a>. Location tracks can be viewed on a map <a href="map.html">here</a>.</p> -->
+  		<div style="background-color:#72C7E7;padding:12px">
+  			<h4>longitude: <span id="x">not recording...</span></h4>
+  			<h4>latitude: <span id="y">not recording...</span></h4>
+  			<hr/>
+			<p>
+				<button id="starter" class="btn btn-danger" onclick="startWatch()">Capture Location</button>
+			</p>
+			<p>
+	  			<button id="stopper" class="btn btn-danger" onclick="stopWatch()" disabled>Stop Capture</button>
+			</p>
+			<p>
+				<button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save to Cloudant</button>
+			</p>
+			<p id="message"></div>
+  		</div>
+  	</div>
+
+	<script>
+	if (navigator.geolocation) {
+	  console.log("Geolocation is available");
+	} else {
+  	  alert("Geolocation IS NOT available!");
+  	  document.getElementById('starter').disabled = true;
+	}
+
+	var last_lon = 0;
+	var last_lat = 0;
+	var session_id = guid();
+	var watchID = null;
+	var db = new PouchDB('localdb');
+	var remotedb = 'https://oullyincentrattlyindinde:rBI18O7B0F8q85uItn4BREtm' + 
+					'@rajsingh.cloudant.com/locationtracker';
+	
+	function startWatch() {
+		document.getElementById('starter').disabled = true;
+		document.getElementById('stopper').disabled = false;
+		document.getElementById('saver').disabled = true;
+		
+		document.getElementById('x').innerHTML = "updating...";
+		document.getElementById('y').innerHTML = "updating...";
+		
+		watchID = navigator.geolocation.watchPosition(doWatch, watchError);
+	}
+	
+	function doWatch(position) {
+		var lon = Number(Math.round(position.coords.longitude+'e'+4)+'e-'+4);
+		var lat = Number(Math.round(position.coords.latitude+'e'+4)+'e-'+4);
+		if ( (lon==last_lon) && (lat==last_lat) ) return null;
+		
+		last_lon = lon;
+		last_lat = lat;
+		var coord = {
+			"type":"Feature", 
+			"geometry": {
+				"type":"Point", 
+				"coordinates": [ lon, lat ]
+			}, 
+			"properties": {
+				"session_id": session_id,
+				"timestamp": position.timestamp
+			}
+		};
+		
+		// console.log('POSTING: '+JSON.stringify(coord));
+		db.post(coord, function callback(err, response) {
+			if ( err ) { alert('POST ERROR: '+err); }
+
+			db.get(response.id, function callback(err, doc) {
+				if ( err ) { console.log('ERROR: '+err); }
+				
+				console.log('GOT: '+JSON.stringify(doc));
+				document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
+				document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
+				document.getElementById('message').innerHTML = new Date(doc.properties.timestamp*1000);
+			});
+		});
+	}
+	
+	function watchError(err) {
+		document.getElementById('x').innerHTML = "permission denied...";
+		document.getElementById('y').innerHTML = "permission denied...";
+		alert('Error' + err.code + ' msg: ' + err.message);
+		document.getElementById('starter').disabled = false;
+	}
+	
+	function stopWatch() {
+		document.getElementById('starter').disabled = false;
+		document.getElementById('stopper').disabled = true;
+		document.getElementById('saver').disabled = false;
+
+		if ( watchID )
+			navigator.geolocation.clearWatch(watchID);
+	}
+	
+	function saveToServer() {
+		document.getElementById('saver').disabled = true;
+		document.getElementById('message').innerHTML = 'Saving positioning data to Cloudant...';
+		 
+		db.replicate.to(remotedb).on('complete', function(info){
+			msg = ' ...successful replication of ' + info.docs_written + 
+				' docs at ' + info.start_time;
+			console.log(msg);
+			document.getElementById('message').innerHTML = msg;
+		}).on('error', function(err) {
+			console.log('error replicating: ' + err);
+			document.getElementById('message').innerHTML = 'error replicating: ' + err;
+		});
+	}
+
+	/**
+	 * Generates a GUID string.
+	 * @returns {String} The generated GUID.
+	 * @example af8a8416-6e18-a307-bd9c-f2c947bbb3aa
+	 * @author Slavik Meltser (slavik@meltser.info).
+	 * @link http://slavik.meltser.info/?p=142
+	 */
+	function guid() {
+	    function _p8(s) {
+	        var p = (Math.random().toString(16)+"000000000").substr(2,8);
+	        return s ? "-" + p.substr(0,4) + "-" + p.substr(4,4) : p ;
+	    }
+	    return _p8() + _p8(true) + _p8(true) + _p8();
+	}
+
+	// data posting cURL commands
+	// curl -H "Content-Type:application/json" -d @e.json -X POST http://localhost:5984/deviceloc
+	// curl -H "Content-Type:application/json" -d '{"seon": "summer", "weather": "usually warm and sunny"}' -X POST http://localhost:5984/deviceloc
+	// curl -d '{"season": "summer", "weather": "usually warm and sunny"}' -X POST https://typhstionualwastokeducti:hen3dGE1WbYpYKaOEMjXN6Sh@rajsingh.cloudant.com/movingstuff -H "Content-Type:application/json"
+	</script>
+	
+  </body>
+
+</html>
