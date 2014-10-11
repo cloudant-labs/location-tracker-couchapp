@@ -6,13 +6,13 @@ Here are the steps we will go through:
 [cols="2"]
 |===
 |*Application layer setup:* to make Javascript data transfer easy, we'll put the app on the same server as the database. We'll take advantage of the fact that CouchDB/Cloudant can act as a simple web server and write our code in a _CouchApp_. This is a technique to serve your HTML, Javascript, CSS and graphics right out of the database.
-|image:graphics/couchapps_sm.gif[]
+|!(graphics/couchapps_sm.gif)
 |*Capturing location:* we'll utilize the HTML5 _Geolocation API_ to capture the device's location. Then we'll use _PouchDB_, a miniature CouchDB database implemented as a client-side Javascript library.
-|image:graphics/locationcapture_sm.gif[]
+|!(graphics/locationcapture_sm)
 |*Saving data to the cloud:* Next, we'll push our location data to a Cloudant database using the database replication capability built into Cloudant/CouchDB/PouchDB.
-|image:graphics/phone2cloud_sm.gif[]
+|!(graphics/phone2cloud_sm)
 |*Mapping real-time movement:* Finally, we'll build an app that pulls location data from Cloudant and puts these tracks on a map. This could be a mobile client, but is more likely to be something used in an operations center by someone needing an overview of the whole system.
-|image:graphics/fleet_tracker_map_sm.gif[]
+|!(graphics/fleet_tracker_map_sm)
 |===
 
 ---
@@ -93,7 +93,7 @@ and type Listing 2  into a file called `index.html`.
 
 This is basic HTML to create some user interface elements to show the current coordinates of the device in the <span> elements with ids of “x” and “y”, and also to allow the user to start and stop location recording using the buttons with ids of “starter” and “stopper”.  The page should look something like Figure 1.
 
-image::graphics/locationcapture_basic.gif[title="Location capture user interface"]
+!(graphics/locationcapture_basic.gif "Location capture user interface")
 
 ****
 NOTE: Notice the stylesheet link in the <head> makes the app prettier and mobile-friendly by adding the Bootstrap CSS to the page. The app will work fine without it though.
@@ -193,7 +193,7 @@ NOTE: *Respect your user's battery:* Requesting location _only when you really n
 
 When the `navigator.geolocation.watchPosition` function runs, your browser will ask you if you agree to have your location shared with this web page. Different browsers will present different user interfaces for this, but here's what it looks like in Firefox:
 
-image::graphics/firefox_sharelocation_sm.png[title="Firefox location sharing dialog"]
+!(graphics/firefox_sharelocation_sm.png "Firefox location sharing dialog")
 
 If you decline to share your location, or some other error condition happens, function watchError will be called. Otherwise, doWatch will be called with a position object as input to the function. The properties of this object are described in Listing 4.
 
@@ -234,7 +234,7 @@ Assuming everything went well, the response should be the URL at which you can a
 
 Since you've deployed to the cloud, you can test the app in your phone right away! Load the URL, give permission to access your location, and click the ‘Capture Location' button. Figure 3 shows what it looks like on an iPhone. 
 
-image::graphics/locationcapture_sm.gif[title="The app on an iPhone"]
+!(graphics/locationcapture_sm.gif "The app on an iPhone")
 
 Congratulations! You've got some valuable location data from your user. Walk around a bit and watch the coordinates change. In fact, take a break and walk around your office or neighborhood. You've been meaning to get some exercise anyway, right? Just make sure to stop looking at your phone so you don't get run over by a car. 
 
@@ -340,7 +340,7 @@ In your list of databases, find locationtracker and click on the padlock icon at
 
 This will bring up a panel like that shown in Figure 3. Click on the “Generate API key” button on the far right, and in a few seconds you will have a new key with a funny name and password. It will automatically be given read permission to the database. Also check the Writer permission for this new programmatic user of your database. Write down the key and password as now shown to you. You will use it in place of username and password authentication in your app. Also give “Reader” permission to “Everybody Else” so that no login is required to see the web page or the final map when we build it. We only want to require authentication when writing to the database. Now you are ready to use this information in your app. 
 
-image::graphics/permissions.png[title="Generating an API key"]
+!(graphics/permissions.png "Generating an API key")
 
 PouchDB, along with the power of CouchDB replication, makes writing to the remote database incredibly simple. After this line where you initialize the local database: 
 
