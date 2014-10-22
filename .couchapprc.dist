@@ -4,7 +4,7 @@
 		"db": "http://localhost:5984/locationtracker"
 	},
 	"remote": {
-		"db": "http://rajsingh:genjisan@rajsingh.cloudant.com/locationtracker"
+		"db": "http://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker"
 	}
 }
 }

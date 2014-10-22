@@ -18,11 +18,12 @@ Here are the steps we will go through:
 ---
 <<<
 
+=== Step 1: Setup
 
-=== Step 0: Get a Cloudant Account
-If you don't yet have one, you'll need a Cloudant account to do this exercise. It's free, so head on over to +++<u>https://cloudant.com/sign-up/</u>+++ and get one now. 
+==== Get a Cloudant Account
+If you don't yet have one, you'll need a Cloudant account to do this exercise. It's free, so head on over to https://cloudant.com/sign-up/ and get one now. 
 
-=== Step 1: CouchApp Setup
+==== CouchApp Setup
 We're going to write a very simple location recording client using modern Javascript and HTML5. We could accomplish this with a single, short web page that didn't require any special server platform other than your favorite HTTP server of choice. However, we'll eventually want to save the location data in Cloudant using Javascript, and we don't want to get into the complications of http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[CORS (cross-origin resource sharing)], so we need to put our web page on the same server as our Cloudant database.  
 
 The best way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp.  
@@ -224,16 +225,16 @@ Note that we don't just save the data as-is. We put them in a specially construc
 Also note that we do a little math to round the GPS coordinates to 5 decimal places, and at the same time check to make sure we're not saving the same coordinates we captured last time through the function. These 2 things taken together ensure we only save coordinate changes that represent at least about a meter. That distance is good for changes to a walking pace. If you're going to be biking or driving you may want to modify the code to require a bigger change in coordinate values.
 
 ==== Step 3: Road test
-Let's test out what we have so far by deploying the CouchApp to Cloudant. If you've rummaged around inside the locationtracker directory, you've probably found a lot of other files that were put there by the generate script. We don't need those right now, but we can safely deploy and ignore them. In a real application, you'd want to make sure only the file that were absolutely necessary were included. To deploy the code to the server, run this command from the ‘locationtracker' directory: 
+Let's test out what we have so far by deploying the CouchApp to Cloudant. If you've rummaged around inside the locationtracker directory, you've probably found a lot of other files that were put there by the generate script. We don't need those right now, but we can safely deploy and ignore them. In a real application, you'd want to make sure only the file that were absolutely necessary were included. To deploy the code to the server, run this command from the 'locationtracker' directory: 
 
  $ couchapp push . remote 
 
 Let's briefly go through how this command works. couchapp is the main command. The rest of the line are arguments to the command. push means to copy code somewhere, and the . (dot) means the couchapp to copy is in the current directory. remote mean to look in the  .couchapprc file (remember we created this early on?) and find a resource with the name remote, and push the CouchApp to that database. 
 
-Assuming everything went well, the response should be the URL at which you can access the app, such as: 
-  http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/index.html 
+Assuming everything went well, the response should be the URL at which you can access the app, such as:
+$ http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/index.html 
 
-Since you've deployed to the cloud, you can test the app in your phone right away! Load the URL, give permission to access your location, and click the ‘Capture Location' button. Figure 3 shows what it looks like on an iPhone. 
+Since you've deployed to the cloud, you can test the app in your phone right away! Load the URL, give permission to access your location, and click the 'Capture Location' button. Figure 3 shows what it looks like on an iPhone. 
 
 image::graphics/locationcapture_sm.gif[title="The app on an iPhone"]
 
@@ -253,7 +254,7 @@ First, let's start storing the coordinates in the browser in PouchDB. Add PouchD
 <script src="http://cdn.jsdelivr.net/pouchdb/3.0.6/pouchdb.min.js"></script> 
 ----
 
-Then, in your `<script>` code, right after `‘watchID = null'`, add this line: 
+Then, in your `<script>` code, right after `'watchID = null'`, add this line: 
 
 [source,javascript]
 ----
@@ -361,7 +362,7 @@ var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtrac
  
 Then add the `saveToServer` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the “Save” button when it makes sense. The code for the full HTML file is https://github.com/rajrsingh/locationtracker[here].
 
-The `saveToServer` function has one major PouchDB call, `replicate.to`. It's only argument is the database to replicate to, which we specified earlier. The anonymous functions that handle callbacks on the ‘complete' and ‘error' return values simply report to the user what is happening. 
+The `saveToServer` function has one major PouchDB call, `replicate.to`. It's only argument is the database to replicate to, which we specified earlier. The anonymous functions that handle callbacks on the 'complete' and 'error' return values simply report to the user what is happening. 
 
 .Listing 6: Saving coordinates to the server
 [source,html]
@@ -481,7 +482,7 @@ The next thing we do is initialize the map with this line of code:
 var map = L.map('map').setView([42.36, -71.1], 10); 
 ----
 
-This is a call to the Leaflet library. The `L.map` constructor takes as its only required argument the id of the HTML DOM element in which to draw the map. The `setView` function starts the map off with a view of downtown Boston, Massachusetts by specifying a center point of 42.36, -71.1 and a zoom level of 10. You can set this to anywhere you'd like as we'll make the map move to just show our device locations as soon as we get data from the server. 
+This is a call to the Leaflet library. The `L.map` constructor takes as its only required argument the id of the HTML DOM element in which to draw the map. The `setView` function starts the map off with a view of downtown Boston, Massachusetts (right next to "Cloudant World Headquarters" by the way) by specifying a center point of 42.36, -71.1 and a zoom level of 10. You can set this to anywhere you'd like as we'll make the map move to just show our device locations as soon as we get data from the server. 
 
 Now we'll add geographic data to the map. The `L.tileLayer` command adds a basic street map so that our device locations aren't floating on a blank background. The movementLayer variable is defined as a http://geojson.org[GeoJSON] layer. We initialize it with an empty constructer -- `L.geoJson()` -- meaning there's no data in the layer yet, and add it to the map. We'll add data to it as we receive changes from the Cloudant database through that `updateMovingLayer` callback function we set up with the PouchDB `changes` function. 
 
@@ -489,7 +490,7 @@ The final piece of magic is the `updateMovingLayer` function, which gets called 
 
 Above it was mentioned that we will display our device location data on the map using a GeoJSON layer. The good news is that the Leaflet community has already built support for adding GeoJSON data to a map, so Cloudant's support for this standard really pays off here. All we have to do is add the change document to the map with no extra data massaging with the command `movementLayer.addData(change.doc)`. The next command, `map.fitBounds(movementLayer.getBounds())`, makes the map zoom to the extent of all the data points, so that we are sure to see everything available.
 
-We are also wrapping the whole operation in an if statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.  
+We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.  
 
 It's important to note that we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works fine for hundreds or even thousands of points, but more advanced techniques are used to manage millions of locations. For example, we did not create a geospatial index to optimize retrieval of locations in a defined area. And with the basic Cloudant service you can retrieve spatial data within a bounding rectangle, but you can't retrieve data within an an area defined by an arbitrary polygon, such as a town boundary or a sales district. All these capabilities and more are available in “Cloudant Geo”, an advanced service that adds powerful geospatial data indexing and query functionality to the core offering.
 

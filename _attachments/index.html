@@ -28,7 +28,7 @@
 			<p>
 				<button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save to Cloudant</button>
 			</p>
-			<p id="message"></div>
+			<p id="message"></p>
   		</div>
   	</div>
 
@@ -45,46 +45,46 @@
 	var session_id = guid();
 	var watchID = null;
 	var db = new PouchDB('localdb');
-	var remotedb = 'https://oullyincentrattlyindinde:rBI18O7B0F8q85uItn4BREtm' + 
+	var remotedb = 'https://oullyincentrattlyindinde:rBI18O7B0F8q85uItn4BREtm' +
 					'@rajsingh.cloudant.com/locationtracker';
-	
+
 	function startWatch() {
 		document.getElementById('starter').disabled = true;
 		document.getElementById('stopper').disabled = false;
 		document.getElementById('saver').disabled = true;
-		
+
 		document.getElementById('x').innerHTML = "updating...";
 		document.getElementById('y').innerHTML = "updating...";
-		
+
 		watchID = navigator.geolocation.watchPosition(doWatch, watchError);
 	}
-	
+
 	function doWatch(position) {
 		var lon = Number(Math.round(position.coords.longitude+'e'+4)+'e-'+4);
 		var lat = Number(Math.round(position.coords.latitude+'e'+4)+'e-'+4);
 		if ( (lon==last_lon) && (lat==last_lat) ) return null;
-		
+
 		last_lon = lon;
 		last_lat = lat;
 		var coord = {
-			"type":"Feature", 
+			"type":"Feature",
 			"geometry": {
-				"type":"Point", 
+				"type":"Point",
 				"coordinates": [ lon, lat ]
-			}, 
+			},
 			"properties": {
 				"session_id": session_id,
 				"timestamp": position.timestamp
 			}
 		};
-		
+
 		// console.log('POSTING: '+JSON.stringify(coord));
 		db.post(coord, function callback(err, response) {
 			if ( err ) { alert('POST ERROR: '+err); }
 
 			db.get(response.id, function callback(err, doc) {
 				if ( err ) { console.log('ERROR: '+err); }
-				
+
 				console.log('GOT: '+JSON.stringify(doc));
 				document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
 				document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
@@ -92,14 +92,14 @@
 			});
 		});
 	}
-	
+
 	function watchError(err) {
 		document.getElementById('x').innerHTML = "permission denied...";
 		document.getElementById('y').innerHTML = "permission denied...";
 		alert('Error' + err.code + ' msg: ' + err.message);
 		document.getElementById('starter').disabled = false;
 	}
-	
+
 	function stopWatch() {
 		document.getElementById('starter').disabled = false;
 		document.getElementById('stopper').disabled = true;
@@ -108,13 +108,13 @@
 		if ( watchID )
 			navigator.geolocation.clearWatch(watchID);
 	}
-	
+
 	function saveToServer() {
 		document.getElementById('saver').disabled = true;
 		document.getElementById('message').innerHTML = 'Saving positioning data to Cloudant...';
-		 
+
 		db.replicate.to(remotedb).on('complete', function(info){
-			msg = ' ...successful replication of ' + info.docs_written + 
+			msg = ' ...successful replication of ' + info.docs_written +
 				' docs at ' + info.start_time;
 			console.log(msg);
 			document.getElementById('message').innerHTML = msg;
@@ -144,7 +144,7 @@
 	// curl -H "Content-Type:application/json" -d '{"seon": "summer", "weather": "usually warm and sunny"}' -X POST http://localhost:5984/deviceloc
 	// curl -d '{"season": "summer", "weather": "usually warm and sunny"}' -X POST https://typhstionualwastokeducti:hen3dGE1WbYpYKaOEMjXN6Sh@rajsingh.cloudant.com/movingstuff -H "Content-Type:application/json"
 	</script>
-	
+
   </body>
 
 </html>

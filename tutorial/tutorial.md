@@ -108,7 +108,7 @@ Now that we know we can support location, we can trust that our app can run. Not
 
 .Listing 3. Location capture Javascript
 
-```html
+```javascript
 <!DOCTYPE html>
 <html lang="en">
   <head>...</head>
@@ -225,7 +225,9 @@ Also note that we do a little math to round the GPS coordinates to 5 decimal pla
 #### Step 3: Road test
 Let's test out what we have so far by deploying the CouchApp to Cloudant. If you've rummaged around inside the locationtracker directory, you've probably found a lot of other files that were put there by the generate script. We don't need those right now, but we can safely deploy and ignore them. In a real application, you'd want to make sure only the file that were absolutely necessary were included. To deploy the code to the server, run this command from the ‘locationtracker' directory: 
 
- $ couchapp push . remote 
+```bash
+$ couchapp push . remote 
+```
 
 Let's briefly go through how this command works. couchapp is the main command. The rest of the line are arguments to the command. push means to copy code somewhere, and the . (dot) means the couchapp to copy is in the current directory. remote mean to look in the  .couchapprc file (remember we created this early on?) and find a resource with the name remote, and push the CouchApp to that database. 
 
@@ -253,8 +255,7 @@ First, let's start storing the coordinates in the browser in PouchDB. Add PouchD
 
 Then, in your `<script>` code, right after `‘watchID = null'`, add this line: 
 
-[source,javascript]
-```
+```javascript
 var db = new PouchDB('localdb'); 
 ```
 
@@ -325,7 +326,9 @@ This matches the user's expectation that whatever they're seeing is being record
 
 Now if you want, you can deploy this new code to the server and test your work: 
 
- $ couchapp push . remote 
+```bash
+$ couchapp push . remote 
+```
 
 There will be no visible difference from the last deploy (if everything is working correctly), but using your favorite Javascript debugger you should be able to see some interesting new stuff in the `db` object.
 
