@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Location Tracking Geo location demo</title>
-    <!-- link rel="stylesheet" href="style/main.css" type="text/css" -->
-    <link rel="stylesheet" href="style/bootstrap.css" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style/main.css" type="text/css">
 	<script src="script/pouchdb.js" type="text/javascript"></script>
   </head>
   <body>
@@ -15,19 +15,21 @@
 			<h1>Location Capture</h1>
 		</div>
   		<!-- <p>Allow this page to use your location and see the coordinates change below. Coordinates are stored locally in <a href="http://pouchdb.com" target="_new">PouchDB</a>, then replicated to the cloud in a <a href="http://cloudant.com" target="_new">Cloudant</a> database at <a href="http://rajsingh.cloudant.com/locationtracker/_all_docs">http://rajsingh.cloudant.com/locationtracker</a>. Location tracks can be viewed on a map <a href="map.html">here</a>.</p> -->
-  		<div style="background-color:#72C7E7;padding:12px">
+  		<div class="gpspanel">
   			<h4>longitude: <span id="x">not recording...</span></h4>
   			<h4>latitude: <span id="y">not recording...</span></h4>
   			<hr/>
-			<p>
-				<button id="starter" class="btn btn-danger" onclick="startWatch()">Capture Location</button>
-			</p>
-			<p>
-	  			<button id="stopper" class="btn btn-danger" onclick="stopWatch()" disabled>Stop Capture</button>
-			</p>
-			<p>
-				<button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save to Cloudant</button>
-			</p>
+			<div id="buttons">
+				<p>
+					<button id="starter" class="btn btn-danger" onclick="startWatch()">Capture Location</button>
+				</p>
+				<p>
+		  			<button id="stopper" class="btn btn-danger" onclick="stopWatch()" disabled>Stop Capture</button>
+				</p>
+				<p>
+					<button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save to Cloudant</button>
+				</p>
+			</div>
 			<p id="message"></p>
   		</div>
   	</div>

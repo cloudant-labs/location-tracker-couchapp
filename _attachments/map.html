@@ -51,19 +51,6 @@
 
 	function updateMovingLayer(change) {
 		if ( !change.doc._deleted && change.doc.type == 'Feature' ) {
-			// changegeo = {
-			// 	"type":"Feature",
-			// 	"geometry": {
-			// 		"type":"Point",
-			// 		"coordinates": [
-			// 			change.doc.longitude, change.doc.latitude
-			// 		]
-			// 	},
-			// 	"properties": {
-			// 		"id": change.doc.id,
-			// 		"timestamp": change.doc.timestamp
-			// 	}
-			// };
 			movementLayer.addData(change.doc);
 			map.fitBounds(movementLayer.getBounds());
 		}
