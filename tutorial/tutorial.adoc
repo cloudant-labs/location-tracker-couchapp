@@ -29,7 +29,7 @@ We're going to write a very simple location recording client using modern Javasc
 The best way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
 
 ****
-NOTE: _CouchApps are web applications served directly from CouchDB, mostly driven by JavaScript and HTML5. If you can fit your application into those constraints, then you get CouchDB's scalability and flexibility "for free" (and deploying your app is as simple as replicating it to the production server)._  -- http://couchdb.org[Couchdb.org]
+NOTE: _CouchApps are web applications served directly from CouchDB, mostly driven by JavaScript and HTML5. If you can fit your application into those constraints, then you get CouchDB's scalability and flexibility "for free" (and deploying your app is as simple as replicating it to the production server)._  -- http://docs.couchdb.org/en/latest/couchapp/[Couchdb.org]
 ****
 
 If you're not familiar with setting up a CouchApp, https://github.com/couchapp/couchapp[follow these instructions] and come back when you're done. Or for a more extensive CouchApp introduction, follow this excellent tutorial on IBM developerWorks, http://www.ibm.com/developerworks/opensource/tutorials/os-couchapp/[Building CouchApps]. 
