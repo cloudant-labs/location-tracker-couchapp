@@ -6,13 +6,13 @@ Here are the steps we will go through:
 [cols="2"]
 |===
 |*Application layer setup:* to make Javascript data transfer easy, we'll put the app on the same server as the database. We'll take advantage of the fact that CouchDB/Cloudant can act as a simple web server and write our code in a _CouchApp_. This is a technique to serve your HTML, Javascript, CSS and graphics right out of the database.
-|image:graphics/couchapps_sm.gif[]
+|image:graphics/couchapps_200.png[]
 |*Capturing location:* we'll utilize the HTML5 _Geolocation API_ to capture the device's location. Then we'll use _PouchDB_, a miniature CouchDB database implemented as a client-side Javascript library.
-|image:graphics/locationcapture_sm.gif[]
+|image:graphics/locationcapture_200.png[]
 |*Saving data to the cloud:* Next, we'll push our location data to a Cloudant database using the database replication capability built into Cloudant/CouchDB/PouchDB.
-|image:graphics/phone2cloud_sm.gif[]
+|image:graphics/phone2cloud_200.png[]
 |*Mapping real-time movement:* Finally, we'll build an app that pulls location data from Cloudant and puts these tracks on a map. This could be a mobile client, but is more likely to be something used in an operations center by someone needing an overview of the whole system.
-|image:graphics/fleet_tracker_map_sm.gif[]
+|image:graphics/fleet_tracker_map_200.png[]
 |===
 
 ---
