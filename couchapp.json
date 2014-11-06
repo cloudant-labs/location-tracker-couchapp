@@ -1,4 +1,4 @@
 {
-    "name": "Location Tracking",
-    "description": "CouchApp with changes feed and form support."
+    "name": "Location Tracker",
+    "description": "This tutorial shows how to build a mobile app in HTML5 and Javascript that records a device’s location and saves it to an IBM Cloudant database."
 }

@@ -1,32 +1,18 @@
-## Generated CouchApp
+# Location Tracker
+Raj Singh
+November, 2014
 
-This is meant to be an example CouchApp and to ship with most of the CouchApp goodies.
+## Overview
 
-Clone with git:
+This is a tutorial on how to build a mobile app in HTML5 and Javascript that records a device’s location and saves the location data to IBM's Cloudant JSON database service. A simple mapping client using Leaflet is also described. 
 
-    git clone git://github.com/couchapp/example.git
-    cd example
+## Code
 
-Install with 
-    
-    couchapp push . http://localhost:5984/example
+The code for this tutorial is organized into a CouchApp (as described in the [tutorial](./tutorial)), so all the web files are location in the [_attachments](./_attachments) directory.
 
-or (if you have security turned on)
+## Tutorial
 
-    couchapp push . http://adminname:adminpass@localhost:5984/example
-  
-You can also create this app by running
-
-    couchapp generate example && cd example
-    couchapp push . http://localhost:5984/example
-
-Deprecated: *couchapp generate proto && cd proto*
-
-
-## Todo
-
-* factor CouchApp Commonjs to jquery.couch.require.js
-* use $.couch.app in app.js
+An extensive tutorial describing the app may be found in the [tutorial](./tutorial) directory.
 
 ## License
 
