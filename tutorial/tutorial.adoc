@@ -26,7 +26,7 @@ If you don't yet have one, you'll need a Cloudant account to do this exercise. I
 ==== CouchApp Setup
 We're going to write a very simple location recording client using modern Javascript and HTML5. We could accomplish this with a single, short web page that didn't require any special server platform other than your favorite HTTP server of choice. However, we'll eventually want to save the location data in Cloudant using Javascript, and we don't want to get into the complications of http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[CORS (cross-origin resource sharing)], so we need to put our web page on the same server as our Cloudant database.  
 
-The best way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp.  
+The best way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
 
 ****
 NOTE: _CouchApps are web applications served directly from CouchDB, mostly driven by JavaScript and HTML5. If you can fit your application into those constraints, then you get CouchDB's scalability and flexibility "for free" (and deploying your app is as simple as replicating it to the production server)._  -- http://couchdb.org[Couchdb.org]
