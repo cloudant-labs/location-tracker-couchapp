@@ -414,6 +414,8 @@ Add the “Save” button to the web page by putting this HTML after the “Stop
 <button id="saver" class="btn btn-danger" onclick="saveToServer()" disabled>Save</button>
 ----
 
+Now redeploy your app by pushing the couchapp to the server and do some field testing. Remember you have to use all 3 buttons in order: "Capture Location" to start recording locations; "Stop Capture" (as a check to make sure you don't log data forever); and "Save to Cloudant" to put the location data into the database. Make sure it all worked by going back to the Cloudant dashboard and looking at your database. There should be ten or so documents in there now.
+
 === Step 4: Mapping real-time movement
 We now have a pretty nice application to track the location of any moving device that supports Javascript and the Geolocation API. But a location tracking tutorial wouldn't be complete without ultimately seeing the data on a map. So let's make a second app that displays location data from Cloudant. This app will work for any point data you have in a Cloudant database -- customers, stores, etc. -- not just location tracking data, so you should find this code useful in the future.
 
@@ -433,7 +435,6 @@ One area where Cloudant/CouchDB excels is in its ability to synchronize changes 
 ****
 
 We  define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we've established a local copy of our database as well as a way to get real-time updates!
-
 
 .Listing 7: Real-time mapping
 [source,html]
@@ -499,7 +500,9 @@ The final piece of magic is the `updateMovingLayer` function, which gets called 
 
 Above it was mentioned that we will display our device location data on the map using a GeoJSON layer. The good news is that the Leaflet community has already built support for adding GeoJSON data to a map, so Cloudant's support for this standard really pays off here. All we have to do is add the change document to the map with no extra data massaging with the command `movementLayer.addData(change.doc)`. The next command, `map.fitBounds(movementLayer.getBounds())`, makes the map zoom to the extent of all the data points, so that we are sure to see everything available.
 
-We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.  
+We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
+
+Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Then 
 
 It's important to note that we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works fine for hundreds or even thousands of points, but more advanced techniques are used to manage millions of locations. For example, we did not create a geospatial index to optimize retrieval of locations in a defined area. And with the basic Cloudant service you can retrieve spatial data within a bounding rectangle, but you can't retrieve data within an an area defined by an arbitrary polygon, such as a town boundary or a sales district. All these capabilities and more are available in “Cloudant Geo”, an advanced service that adds powerful geospatial data indexing and query functionality to the core offering. https://cloudant.com/request-cloudant-geo/[Request more information on Cloudant Geo here].
 
