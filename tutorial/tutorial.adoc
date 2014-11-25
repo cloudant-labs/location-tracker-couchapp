@@ -26,13 +26,17 @@ If you don't yet have one, you'll need a Cloudant account to do this exercise. I
 ==== CouchApp Setup
 We're going to write a very simple location recording client using modern Javascript and HTML5. We could accomplish this with a single, short web page that didn't require any special server platform other than your favorite HTTP server of choice. However, we'll eventually want to save the location data in Cloudant using Javascript, and we don't want to get into the complications of http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[CORS (cross-origin resource sharing)], so we need to put our web page on the same server as our Cloudant database.  
 
-The best way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
+The way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
 
 ****
 NOTE: _CouchApps are web applications served directly from CouchDB, mostly driven by JavaScript and HTML5. If you can fit your application into those constraints, then you get CouchDB's scalability and flexibility "for free" (and deploying your app is as simple as replicating it to the production server)._  -- http://docs.couchdb.org/en/latest/couchapp/[Couchdb.org]
 ****
 
-If you're not familiar with setting up a CouchApp, https://github.com/couchapp/couchapp[follow these instructions] and come back when you're done. Or for a more extensive CouchApp introduction, follow this excellent tutorial on IBM developerWorks, http://www.ibm.com/developerworks/opensource/tutorials/os-couchapp/[Building CouchApps]. 
+All you should need to do is run the following at the command line:
+
+ $ sudo easy_install --upgrade couchapp
+
+If you got any errors from that command, or you'd just like more background on setting up a CouchApp, https://github.com/couchapp/couchapp[follow these instructions] and come back when you're done. Or for a more extensive CouchApp introduction, follow this excellent tutorial on IBM developerWorks, http://www.ibm.com/developerworks/opensource/tutorials/os-couchapp/[Building CouchApps]. 
 
 _insert your favorite elevator music here…_ 
 
@@ -40,7 +44,9 @@ OK, great. Now you've got CouchApp set up and you're ready to start writing code
 
  $ couchapp generate app locationtracker
 
-Now you will have a locationtracker directory with a host of directories in it. The first thing we'll want to do is tell the CouchApp where to deploy, so change to that directory and create a file called .couchapprc (note the “dot” at the beginning of the file name). Type the code in Listing 1 into that file.
+Now you will have a locationtracker directory with a host of directories in it. The first thing we'll want to do is tell the CouchApp where to deploy, so change to that directory and create (or update) a file called .couchapprc (note the “dot” at the beginning of the file name). Type the code in Listing 1 into that file.
+
+ $ cd locationtracker
 
 .Listing 1. .couchapprc
 [source,bash]
@@ -48,7 +54,7 @@ Now you will have a locationtracker directory with a host of directories in it. 
 {
   "env": {
     "remote": {
-      "db":"http://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker"
+      "db":"https://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker"
     }
   }
 }
@@ -58,9 +64,9 @@ Now you will have a locationtracker directory with a host of directories in it. 
 ==== User interface
 Now we get to start writing code. In a CouchApp, all HTML files go in the _attachments directory, so cd there: 
 
- $ cd locationtracker/_attachments
+ $ cd _attachments
 
-and type Listing 2  into a file called `index.html`.
+and type Listing 2 into a file called `index.html` (you will probably need to replace the text in the existing file).
 
 .Listing 2. HTML user interface
 [source,html]
@@ -73,7 +79,6 @@ and type Listing 2  into a file called `index.html`.
 	<title>Location Tracker Geo location demo</title>
 	<link rel="stylesheet" 
              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<script src="script/pouchdb.js" type="text/javascript"></script>
   </head>
   <body>
   	<div class="container-fluid">
@@ -85,7 +90,7 @@ and type Listing 2  into a file called `index.html`.
 	  		<p><button id="starter" class="btn btn-danger" 
 				onclick="startWatch()">Capture Location</button></p>
 	  		<p><button id="stopper" class="btn btn-danger" 
-				onclick="stopWatch()" disabled>Stop</button></p>
+				onclick="stopWatch()" disabled>Stop Capture</button></p>
 			<p id="message"></p>
   		</div>
   	</div>
@@ -95,7 +100,7 @@ and type Listing 2  into a file called `index.html`.
 
 This is basic HTML to create some user interface elements to show the current coordinates of the device in the <span> elements with ids of “x” and “y”, and also to allow the user to start and stop location recording using the buttons with ids of “starter” and “stopper”.  The page should look something like Figure 1.
 
-image::graphics/locationcapture_basic.gif[title="Location capture user interface"]
+image::graphics/locationcapture_basic_sm.png[title="Location capture user interface"]
 
 ****
 NOTE: Notice the stylesheet link in the <head> makes the app prettier and mobile-friendly by adding the Bootstrap CSS to the page. The app will work fine without it though.
@@ -197,7 +202,7 @@ When the `navigator.geolocation.watchPosition` function runs, your browser will 
 
 image::graphics/firefox_sharelocation_sm.png[title="Firefox location sharing dialog"]
 
-If you decline to share your location, or some other error condition happens, function watchError will be called. Otherwise, doWatch will be called with a position object as input to the function. The properties of this object are described in Listing 4.
+You can test this out in your browser by opening the `index.html` file locally. If you decline to share your location, or some other error condition happens, the function `watchError` will be called. Otherwise, doWatch will be called with a position object as input to the function. The properties of this object are described in Listing 4.
 
 Let's pause a second and give a shout out to the browser manufacturers for making our lives as web developers so simple. What's going on here is that the browser is going to interface with the hardware on whatever device it's running -- a phone, tablet, wearable, sensor, whatever -- and get a latitude/longitude reading using the best means available -- embedded GPS, WiFi triangulation, iBeacons, whatever -- and give that to you, the Javascript developer, in a nice consistent format the same way, every time. Sometimes standards efforts really get it right.
 
@@ -229,14 +234,18 @@ Let's test out what we have so far by deploying the CouchApp to Cloudant. If you
 
  $ couchapp push . remote 
 
-Let's briefly go through how this command works. couchapp is the main command. The rest of the line are arguments to the command. push means to copy code somewhere, and the . (dot) means the couchapp to copy is in the current directory. remote mean to look in the  .couchapprc file (remember we created this early on?) and find a resource with the name remote, and push the CouchApp to that database. 
+Let's briefly go through how this command works. `couchapp` is the main command. The rest of the line consists of arguments to the command. `push` means to copy code somewhere, and the . (dot) means the couchapp to copy is the current directory. `remote` means look in the  `.couchapprc` file (remember we created this early on) and find a resource with the name remote, and push the CouchApp to that database (creating the database if need be). 
 
 Assuming everything went well, the response should be the URL at which you can access the app, such as:
 $ http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/index.html 
 
-Since you've deployed to the cloud, you can test the app in your phone right away! Load the URL, give permission to access your location, and click the 'Capture Location' button. Figure 3 shows what it looks like on an iPhone. 
+Since you've deployed to the cloud, you can test the app from your phone right away. All you have to do is make the database -- and therefore the web site you just built -- publicly readable. To do that, go to your Cloudant dashboard via this URL: 
 
-image::graphics/locationcapture_sm.gif[title="The app on an iPhone"]
+ $ https://$USERNAME.cloudant.com/dashboard.html
+ 
+The main window shows you a table of your databases. You may only have one at this point -- `locationtracker`. Find the padlock icon to the right of your database name and click on it. You'll see that you have all permissions on this database, and "Everybody Else" has no access. Check the "Reader" box for "Everybody Else", and now your web app is live! Load the URL given to you by the couchapp push command, click the "Capture Location" button, and give permission to access your location. Figure 3 shows what it looks like on an iPhone. 
+
+image::graphics/locationcapture_iphone_safari_sm.png[title="The app on an iPhone in Mobile Safari"]
 
 Congratulations! You've got some valuable location data from your user. Walk around a bit and watch the coordinates change. In fact, take a break and walk around your office or neighborhood. You've been meaning to get some exercise anyway, right? Just make sure to stop looking at your phone so you don't get run over by a car. 
 
@@ -263,7 +272,7 @@ var db = new PouchDB('localdb');
 
 You could actually call this database anything you want. I just chose `localdb` to show that you didn't have to use the same name as the remote Cloudant database name. You'll always refer to the variable name, `db`, from here on out. 
 
-Now, in `doWatch`, let's add code to save each coordinate reading to PouchDB. Change the function to that shown in Listing 5. We still populate the coord variable in the same way, but instead of only displaying the information in the browser, we now put it in our PouchDB database with the command, `db.post`, which takes as arguments the data to store, and the function to call after the command has completed. This is important because all PouchDB commands run asynchronously, meaning that they return immediately, allowing the program to continue execution even before the database has finished accomplishing the work the command gave it. Therefore, we do the rest of our work within the callback to the post command, because we want to make sure the data was saved before displaying it to the user. 
+Now, in `doWatch`, let's add code to save each coordinate reading to PouchDB. Change the function to that shown in Listing 5. We still populate the `coord` variable in the same way, but instead of only displaying the information in the browser, we now put it in our PouchDB database with the command, `db.post`, which takes as arguments the data to store, and the function to call after the command has completed. This is important because all PouchDB commands run asynchronously, meaning that they return immediately, allowing the program to continue execution even before the database has finished accomplishing the work the command gave it. Therefore, we do the rest of our work within the callback to the post command, because we want to make sure the data was saved before displaying it to the user. 
 
 This matches the user's expectation that whatever they're seeing is being recorded. If we get an error writing to the database, we won't show them the new coordinates we got from the device, because that would break the implicit contract with the user that we've created. This is a very simple example of making sure your application is attuned to your user's expectations, but the concept is crucial to well-designed, intuitive apps.
 
@@ -336,15 +345,15 @@ There will be no visible difference from the last deploy (if everything is worki
 === Step 3: Saving data to the Cloud(ant)
 The final step in our fleet tracking app is to persist the data collected to the server in our Cloudant database. First, we'll have to open up our database for writing. When we uploaded our CouchApp, we were actually writing to the database, but we were using our username and password for authentication. It would be very bad form to code your system-wide username and password into every app you wrote, so Cloudant provides a quick and easy way to generate an API key that an app can use to authenticate to a single database. You can give the holder of that key read, read/write, or full administrative access to the database. For our purposes, we'll need to generate a key and give it read/write access to the locationtracker database.  
 
-Go into the Cloudant dashboard by accessing this URL: 
+Once again, go into the Cloudant dashboard by accessing this URL: 
 
  https://$USERNAME.cloudant.com/dashboard.html 
 
 In your list of databases, find locationtracker and click on the padlock icon at the far right of the row. 
 
-This will bring up a panel like that shown in Figure 3. Click on the “Generate API key” button on the far right, and in a few seconds you will have a new key with a funny name and password. It will automatically be given read permission to the database. Also check the Writer permission for this new programmatic user of your database. Write down the key and password as now shown to you. You will use it in place of username and password authentication in your app. Also give “Reader” permission to “Everybody Else” so that no login is required to see the web page or the final map when we build it. We only want to require authentication when writing to the database. Now you are ready to use this information in your app. 
+This will bring up a panel like that shown in Figure 3. Click on the “Generate API key” button on the far right, and in a few seconds you will have a new key with a funny name and password. It will automatically be given read permission to the database. Also check the Writer permission for this new programmatic user of your database. Write down the key and password as now shown to you. You will use it in place of username and password authentication in your app. Now you are ready to use this information in your app. 
 
-image::graphics/permissions.png[title="Generating an API key"]
+image::graphics/permissions_sm.png[title="Generating an API key"]
 
 PouchDB, along with the power of CouchDB replication, makes writing to the remote database incredibly simple. After this line where you initialize the local database: 
 
@@ -360,7 +369,7 @@ add a line initializing the remote Cloudant database:
 var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker'; 
 ----
  
-Then add the `saveToServer` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the “Save” button when it makes sense. The code for the full HTML file is https://github.com/rajrsingh/locationtracker[here].
+Then add the `saveToServer` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the “Save” button when it makes sense. The code for the full HTML file is https://github.com/rajrsingh/locationtracker/blob/master/tutorial/index_1.html[here] in the https://github.com/rajrsingh/locationtracker[GitHub repo for this tutorial].
 
 The `saveToServer` function has one major PouchDB call, `replicate.to`. It's only argument is the database to replicate to, which we specified earlier. The anonymous functions that handle callbacks on the 'complete' and 'error' return values simply report to the user what is happening. 
 
@@ -406,13 +415,13 @@ Add the “Save” button to the web page by putting this HTML after the “Stop
 ----
 
 === Step 4: Mapping real-time movement
-We now have a pretty nice application to track the location of any moving device that supports Javascript and the Geolocation API. But a location tracking tutorial wouldn't be complete without seeing the data on a map in the end. So let's make a quick and dirty application to see where this device has been. We'll once again use PouchDB as our local in-browser database, and it will once again replicate with Cloudant.  
+We now have a pretty nice application to track the location of any moving device that supports Javascript and the Geolocation API. But a location tracking tutorial wouldn't be complete without ultimately seeing the data on a map. So let's make a second app that displays location data from Cloudant. This app will work for any point data you have in a Cloudant database -- customers, stores, etc. -- not just location tracking data, so you should find this code useful in the future.
 
-The cool thing about this is that PouchDB can “listen” for updates to the Cloudant database, and automatically add those new locations to the map as they happen, which results in a pretty slick real-time geographic view of changing events. Thanks to the architecture of CouchDB, we can now do this with just a few lines of code, whereas just a few years ago this kind of application would be very complex, and only feasible for government applications like military “war rooms” and emergency operations centers responding to major natural disasters. 
+We'll once again use PouchDB as our local in-browser database, and it will once again replicate with Cloudant. The really cool thing about this is that PouchDB can “listen” for updates to the Cloudant database, and automatically add those new locations to the map as they happen, which results in a pretty slick real-time geographic view of changing events. Thanks to the architecture of CouchDB, we can now do this with just a few lines of code, whereas just a few years ago this kind of application would be very complex, and only feasible for government applications like military “war rooms” and emergency operations centers responding to major natural disasters. 
 
 The code for the real-time map is shown in Listing 7. Let's step through it from top to bottom.  
 
-Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
+Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet, window="_new"]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
 
 Now we'll create our user interface. Leaflet handles all the mapping components, so let's just give Leaflet a `<div>` to work with. We'll give it the id of “map” and set it to be 400 pixels square. 
 
@@ -447,7 +456,7 @@ We  define our PouchDB database to be remote -- again our API key is used to ref
 		<div id="map" style="width: 400px; height: 400px"></div>
 	</div>
 	<script>
-	var p = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker';
+	var p = 'https://$USERNAME.cloudant.com/locationtracker';
 	var db = new PouchDB(p);	
 	db.changes({include_docs: true, live:true}).on('change', updateMovingLayer);
 	
@@ -492,5 +501,5 @@ Above it was mentioned that we will display our device location data on the map 
 
 We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.  
 
-It's important to note that we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works fine for hundreds or even thousands of points, but more advanced techniques are used to manage millions of locations. For example, we did not create a geospatial index to optimize retrieval of locations in a defined area. And with the basic Cloudant service you can retrieve spatial data within a bounding rectangle, but you can't retrieve data within an an area defined by an arbitrary polygon, such as a town boundary or a sales district. All these capabilities and more are available in “Cloudant Geo”, an advanced service that adds powerful geospatial data indexing and query functionality to the core offering.
+It's important to note that we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works fine for hundreds or even thousands of points, but more advanced techniques are used to manage millions of locations. For example, we did not create a geospatial index to optimize retrieval of locations in a defined area. And with the basic Cloudant service you can retrieve spatial data within a bounding rectangle, but you can't retrieve data within an an area defined by an arbitrary polygon, such as a town boundary or a sales district. All these capabilities and more are available in “Cloudant Geo”, an advanced service that adds powerful geospatial data indexing and query functionality to the core offering. https://cloudant.com/request-cloudant-geo/[Request more information on Cloudant Geo here].
 
