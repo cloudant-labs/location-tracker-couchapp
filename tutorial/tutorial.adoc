@@ -432,7 +432,7 @@ NOTE: *Cloudant and real-time updates*
 One area where Cloudant/CouchDB excels is in its ability to synchronize changes between databases. Leveraging the database's change feed, clients can poll for database updates and pull down only the small amount of information that has changed since the last update.
 ****
 
-We  define our PouchDB database to be remote -- again our API key is used to reference our Cloudant database of location tracks. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we've established a local copy of our database as well as a way to get real-time updates!
+We  define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we've established a local copy of our database as well as a way to get real-time updates!
 
 
 .Listing 7: Real-time mapping
