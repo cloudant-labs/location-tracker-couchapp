@@ -444,7 +444,7 @@ We  define our PouchDB database to be remote. This time we don't need to use our
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Moving Stuff Map</title>
+	<title>Location Tracking Map</title>
 	<link rel="stylesheet" href="style/bootstrap.css" type="text/css" />
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" 
 		type="text/css" />
@@ -453,7 +453,7 @@ We  define our PouchDB database to be remote. This time we don't need to use our
 </head>
 <body>
 	<div class="container">
-		<h1>Moving Stuff Map</h1>
+		<h1>Location Tracking Map</h1>
 		<div id="map" style="width: 400px; height: 400px"></div>
 	</div>
 	<script>
@@ -502,7 +502,13 @@ Above it was mentioned that we will display our device location data on the map 
 
 We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
 
-Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Then 
+Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Then redeploy the couchapp. Now you have a second URL you can access: 
+
+ http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/map.html
+
+Which should show you something that looks like this: 
+
+image::graphics/map.png[title="Location Tracking Map"]
 
 It's important to note that we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works fine for hundreds or even thousands of points, but more advanced techniques are used to manage millions of locations. For example, we did not create a geospatial index to optimize retrieval of locations in a defined area. And with the basic Cloudant service you can retrieve spatial data within a bounding rectangle, but you can't retrieve data within an an area defined by an arbitrary polygon, such as a town boundary or a sales district. All these capabilities and more are available in “Cloudant Geo”, an advanced service that adds powerful geospatial data indexing and query functionality to the core offering. https://cloudant.com/request-cloudant-geo/[Request more information on Cloudant Geo here].
 
