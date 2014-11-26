@@ -1,18 +1,23 @@
 == Location Tracker Tutorial
+
 In this tutorial, we'll build a mobile app in HTML5 and Javascript that records the device's location and saves it to Cloudant. Then we'll build a separate mapping app that reads location information from the Cloudant database and tracks those movements on a map in real time. Note that these two apps are completely separate. The movement tracking map could be mapping hundreds of devices that are storing their locations in the database, but it knows nothing about the actual devices out in the field. It's just reading location data from the database. The two apps will seem connected, however, because the updates occur so seamlessly. All the code for this tutorial can be forked from GitHub from https://www.github.com/rajrsingh/locationtracker[this repository]. 
 
-Here are the steps we will go through:
+Here are the steps we will go through. This tutorial isn't quick. Altogether it could take from 45 to 90 minutes to get through all the parts, depending on your prior experience with the technologies used. But in the end you'll see it's well worth the effort. 
 
-[cols="2"]
+[cols="3"]
 |===
 |*Application layer setup:* to make Javascript data transfer easy, we'll put the app on the same server as the database. We'll take advantage of the fact that CouchDB/Cloudant can act as a simple web server and write our code in a _CouchApp_. This is a technique to serve your HTML, Javascript, CSS and graphics right out of the database.
+|_time estimate: 15 minutes_
 |image:graphics/couchapps_200.png[]
 |*Capturing location:* we'll utilize the HTML5 _Geolocation API_ to capture the device's location. Then we'll use _PouchDB_, a miniature CouchDB database implemented as a client-side Javascript library.
+|_time estimate: 30 minutes_
 |image:graphics/locationcapture_200.png[]
 |*Saving data to the cloud:* Next, we'll push our location data to a Cloudant database using the database replication capability built into Cloudant/CouchDB/PouchDB.
+|_time estimate: 20 minutes_
 |image:graphics/phone2cloud_200.png[]
 |*Mapping real-time movement:* Finally, we'll build an app that pulls location data from Cloudant and puts these tracks on a map. This could be a mobile client, but is more likely to be something used in an operations center by someone needing an overview of the whole system.
-|image:graphics/fleet_tracker_map_200.png[]
+|_time estimate: 20 minutes_
+|image:graphics/map_sm.png[]
 |===
 
 ---
@@ -68,7 +73,8 @@ Now we get to start writing code. In a CouchApp, all HTML files go in the _attac
 
 and type Listing 2 into a file called `index.html` (you will probably need to replace the text in the existing file).
 
-.Listing 2. HTML user interface
+.Listing 2. HTML5 user interface
+_file: index.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -114,6 +120,7 @@ First, we check for geolocation support by checking for the existence of the var
 Now that we know we can support location, we can trust that our app can run. Notice that the <button> tag with the id “starter” says to run the startWatch function when it's clicked. Look at the `startWatch` function in Listing 3. 
 
 .Listing 3. Location capture Javascript
+_file: index.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -277,6 +284,7 @@ Now, in `doWatch`, let's add code to save each coordinate reading to PouchDB. Ch
 This matches the user's expectation that whatever they're seeing is being recorded. If we get an error writing to the database, we won't show them the new coordinates we got from the device, because that would break the implicit contract with the user that we've created. This is a very simple example of making sure your application is attuned to your user's expectations, but the concept is crucial to well-designed, intuitive apps.
 
 .Listing 5: PouchDB-aware doWatch function
+_file: index.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -374,6 +382,7 @@ Then add the `saveToServer` function shown in Listing 6 to your script. We also 
 The `saveToServer` function has one major PouchDB call, `replicate.to`. It's only argument is the database to replicate to, which we specified earlier. The anonymous functions that handle callbacks on the 'complete' and 'error' return values simply report to the user what is happening. 
 
 .Listing 6: Saving coordinates to the server
+_file: index.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -437,6 +446,7 @@ One area where Cloudant/CouchDB excels is in its ability to synchronize changes 
 We  define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we've established a local copy of our database as well as a way to get real-time updates!
 
 .Listing 7: Real-time mapping
+_file: map.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -506,7 +516,7 @@ Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type)
 
  http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/map.html
 
-Which should show you something that looks like this: 
+Which should show you something that looks like Figure 5, my version of the app which you can see live https://rajsingh.cloudant.com/locationtracker/_design/locationtracker/map.html[here].
 
 image::graphics/map.png[title="Location Tracking Map"]
 
