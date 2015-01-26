@@ -6,7 +6,7 @@ Here are the steps we will go through. This tutorial isn't quick. Altogether it 
 
 [cols="3"]
 |===
-|*Application layer setup:* to make Javascript data transfer easy, we'll put the app on the same server as the database. We'll take advantage of the fact that CouchDB/Cloudant can act as a simple web server and write our code in a _CouchApp_. This is a technique to serve your HTML, Javascript, CSS and graphics right out of the database.
+|*Application layer setup:* to make Javascript data transfer easy, we'll put the app on the same server as the database. We'll take advantage of the fact that CouchDB and Cloudant contain a simple web server and write our code in a _CouchApp_. This is a technique to serve your HTML, Javascript, CSS and graphics right out of the database.
 |_time estimate: 15 minutes_
 |image:graphics/couchapps_200.png[]
 |*Capturing location:* we'll utilize the HTML5 _Geolocation API_ to capture the device's location. Then we'll use _PouchDB_, a miniature CouchDB database implemented as a client-side Javascript library.
@@ -20,8 +20,6 @@ Here are the steps we will go through. This tutorial isn't quick. Altogether it 
 |image:graphics/map_sm.png[]
 |===
 
----
-<<<
 
 === Step 1: Setup
 
@@ -31,7 +29,7 @@ If you don't yet have one, you'll need a Cloudant account to do this exercise. I
 ==== CouchApp Setup
 We're going to write a very simple location recording client using modern Javascript and HTML5. We could accomplish this with a single, short web page that didn't require any special server platform other than your favorite HTTP server of choice. However, we'll eventually want to save the location data in Cloudant using Javascript, and we don't want to get into the complications of http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[CORS (cross-origin resource sharing)], so we need to put our web page on the same server as our Cloudant database.  
 
-The way to do this is to take advantage of the fact that Cloudant/CouchDB can act as a simple web server in addition to its database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
+The way to do this is to take advantage of the fact that Cloudant and CouchDB contain a simple web server in addition to their database serving capabilities. So we'll build our application as a CouchApp. A CouchApp is a methodology for packaging up a set of files for a web site -- HTML, CSS, Javascript and images -- and uploading them into your Cloudant/CouchDB database. The drawback to having no middle tier between the client and the database is that any authentication creditials you need for the database, such as passwords or API keys, must reside in the client, so the Couchapp strategy is inherently insecure and unfit for production apps, but they are great for tutorials like these. Especially since you can share the web site and the data by simply replicating the database. Just make sure you use the Python CouchApp as there are a few different strategies for laying out the files. Only the Python style referenced here will work for this tutorial. 
 
 ****
 NOTE: _CouchApps are web applications served directly from CouchDB, mostly driven by JavaScript and HTML5. If you can fit your application into those constraints, then you get CouchDB's scalability and flexibility "for free" (and deploying your app is as simple as replicating it to the production server)._  -- http://docs.couchdb.org/en/latest/couchapp/[Couchdb.org]
