@@ -76,11 +76,39 @@ angular.module('locationTrackingApp', ['ngAnimate', 'ngRoute'])
     var session_id = guid();
     var db = pouchLocal;
 
+    // add location control to global name space for testing only
+    // on a production site, omit the "lc = "!
+    lc = L.control.locate({
+        follow: true,
+        strings: {
+            title: "Show me where I am, yo!"
+        }
+    }).addTo(map);
+    /* */
+
+    map.on('startfollowing', function() {
+        map.on('dragstart', lc._stopFollowing, lc);
+    }).on('stopfollowing', function() {
+        map.off('dragstart', lc._stopFollowing, lc);
+    });
+
     if (navigator.geolocation) {
         console.log("Geolocation is available");
     } else {
         alert("Geolocation IS NOT available!");
         document.getElementById('starter').disabled = true;
+    }
+
+    function onLocationFound(e) {
+        console.log("onLocationFound");
+        var radius = e.accuracy / 2;
+        L.marker(e.latlng).addTo(map);
+        lc.start();
+    }
+
+    function onLocationError(e) {
+        console.log("onLocationError");
+        alert("Rut ro... " + e.message);
     }
 
     function doWatch(position) {
@@ -141,12 +169,12 @@ angular.module('locationTrackingApp', ['ngAnimate', 'ngRoute'])
 
     $('.longitude-coordinate, .latitude-coordinate').text("updating...");
     watchID = navigator.geolocation.watchPosition(doWatch, watchError);
-    // map.on('locationfound', onLocationFound);
-    // map.on('locationerror', onLocationError);
-    // map.locate({
-    //     setView: true,
-    //     maxZoom: 20
-    // });
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+    map.locate({
+        setView: true,
+        maxZoom: 20
+    });
 })
 
 .controller('locationTrackingSaveDataController', function($scope, map, watchID, pouchLocal, remotedb, successMessage, errorMessage) {
