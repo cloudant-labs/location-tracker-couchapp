@@ -5,15 +5,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Moving Stuff Map</title>
 	<link rel="stylesheet" href="style/bootstrap.css" type="text/css" />
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" type="text/css" />
-	<script src="//cdn.jsdelivr.net/pouchdb/3.0.5/pouchdb.min.js"></script>
-	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" type="text/css" />
 </head>
 <body>
 	<div class="container">
 		<h1>Moving Stuff Map</h1>
 		<div id="map" style="width: 400px; height: 400px"></div>
 	</div>
+	<script src="//cdn.jsdelivr.net/pouchdb/3.2.1/pouchdb.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	<script>
 	var p = 'https://<apikey>:<apipw>@<username>.cloudant.com/locationtracker';
 	var db = new PouchDB(p);	
