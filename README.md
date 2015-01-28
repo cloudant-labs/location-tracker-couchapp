@@ -8,7 +8,7 @@ This is a tutorial on how to build a mobile app in HTML5 and Javascript that rec
 
 ## Code
 
-The code for this tutorial is organized into a CouchApp (as described in the [tutorial](./tutorial)), so all the web files are location in the [_attachments](./_attachments) directory.
+The code for this tutorial is organized into a CouchApp (as described in the [tutorial](./tutorial)), so all the web files are in the [_attachments](./_attachments) directory.
 
 ## Tutorial
 
