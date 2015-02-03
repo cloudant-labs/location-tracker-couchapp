@@ -37,9 +37,17 @@ Let's walk through each of these major concepts to understand how the functional
 
 This section is simple. We're just defining some variables we want to be accessible to multiple controllers. Some of them could be constants, like `remotedb`, but for simplicity we just make them all values, passing them into controllers and manipulating as needed.
 
+.Listing 1. Values in app.js
 [source,javascript]
 ----
-insert value code
+.value("map", {})
+    .value("watchID", null)
+    .value("remotedb", 'https://USERNAME:PASSWORD@USERNAME.cloudant.com/locationtracker')
+    .value("num", 0)
+    .value("successMessage", {})
+    .value("errorMessage", "error")
+    .value("trackingMapInitialized", false)
+    .value("resultMapInitialized", false)
 ----
 
 == Routes
@@ -48,16 +56,45 @@ This section of `app.js` basically matches up URLs with controllers. When the us
 
 For example, the `/welcome` route inserts `location-welcome.html`. We're only interested in showing some user interface goodness here, so no controller is needed. However, note that there's an href to `#tracking` near the bottom of `location-welcome.html`. When the user clicks that link, the `/tracking` route is called, which inserts `location-tracking.html` and activates the controller, `locationTrackingController`. The other routes work the same.
 
+.Listing 2. Routes
 [source,javascript]
 ----
-// insert Routes code
+.config(['$routeProvider', function($routeProvider) {
+    $routeProvider.
+    when('/welcome', {
+        templateUrl: 'location-welcome.html'
+    }).
+    when('/tracking', {
+        templateUrl: 'location-tracking.html',
+        controller: 'locationTrackingController'
+    }).
+    when('/savedata', {
+        templateUrl: 'location-savedata.html',
+        controller: 'locationTrackingSaveDataController'
+    }).
+    when('/success', {
+        templateUrl: 'location-success.html',
+        controller: 'locationTrackingSuccessController'
+    }).
+    when('/error', {
+        templateUrl: 'location-error.html',
+        controller: 'locationTrackingErrorController'
+    }).
+    when('/map', {
+        templateUrl: 'tutorial2-map.html',
+        controller: 'mapResultController'
+    }).
+    otherwise({
+        redirectTo: '/welcome'
+    })
+}])
 ----
 
 == Controllers
 
-This is where the real action is. All the controllers are described in Table 1, and the graphic below depicts their interaction. The welcome route presents the introductory UI that directs the user to activate the `/tracking` route, which runs the `locationTrackingController` controller, which begins capturing device locations. Looking at the code for that controller, which starts with `.controller('locationTrackingController'...`, you see that we create a map that shows the user where they are (note that if the device you were tracking didn't have a human being in front of it, you would surely skip this part). Then you'll eventually come across the function `doWatch` in that controller. This function will be familiar to you from chapter 1 of the tutorial. Except for some user interface manipulation, the code and functionality is the same -- we are taking the location given to us by the device and saving it to a local http://pouchdb.com[PouchDB] database. In addition to running the code in `locationTrackingController`, the `/tracking` route also injected HTML from the `location-tracking.html` file, which allows the user to click on a "Stop and Save data to IBM Cloudant" button when they are done collecting a series of locations. 
+This is where the real action is. All the controllers are described in Table 1, and the graphic below depicts their interaction. The welcome route presents the introductory UI that directs the user to activate the `/tracking` route, which runs the `locationTrackingController` controller, which begins capturing device locations. Looking at the code for that controller, which starts with `.controller('locationTrackingController'...`, you see that we create a map that shows the user where they are (note that if the device you were tracking didn't have a human being in front of it, you would surely skip this part). Then you'll eventually come across the function `doWatch` in that controller. This function will be familiar to you from chapter 1 of the tutorial. Except for some user interface manipulation, the code and functionality is the same -- we are taking the location given to us by the device and saving it to a local http://pouchdb.com[PouchDB] database. In addition to running the code in `locationTrackingController`, the `/tracking` route also injected HTML from the `location-tracking.html` file, which allows the user to click on a *_Stop and Save data to IBM Cloudant_* button when they are done collecting a series of locations. 
 
-The "Stop and Save data to IBM Cloudant" button activates the `/savedata` route, which runs  `locationTrackingSaveDataController`. The code for that controller, which starts with `.controller('locationTrackingSaveDataController'...`, runs some cool page animation effects and replicates our local PouchDB database to Cloudant. This is functionally equivalent to the `saveToServer` function in chapter 1. When database replication is finished, the controller automatically redirects to either a success or error UI. 
+The *_Stop and Save data to IBM Cloudant_* button activates the `/savedata` route, which runs  `locationTrackingSaveDataController`. The code for that controller, which starts with `.controller('locationTrackingSaveDataController'...`, runs some cool page animation effects and replicates our local PouchDB database to Cloudant. This is functionally equivalent to the `saveToServer` function in chapter 1. When database replication is finished, the controller automatically redirects to either a success or error UI. 
 
 If the process was successful, we see some metadata about how many documents were written to the database, and we get an option to see a map of all the location data saved in the Cloudant database, just like we did at the end of chapter 1. 
 
@@ -65,15 +102,15 @@ If the process was successful, we see some metadata about how many documents wer
 image::graphics/components.png[title="Application Components"]
 
 .Angular routes
-[cols="2,2,2,2", frame="topbot",options="header"]
+[cols="2,2,2,2,2", frame="topbot",options="header"]
 |=====
-|Route |templateUrl |controller |what it does
-|/welcome |location-welcome.html | | static introductory message
-|/tracking |location-tracking.html | locationTrackingController | captures device location in PouchDB while showing current location on a map
-|/savedata |location-savedata.html | locationTrackingSaveDataController | Saves location data to Cloudant by replicating from the local PouchDB to a remote Cloudant database account
-|/success |location-success.html | locationTrackingSuccessController | Shows metadata about the successful replication
-|/error |location-error.html | locationTrackingErrorController |Shows metadata about a failed replication
-|/map |tutorial2-map.html | mapResultController |Shows a map of all location data in the database
+|Route |templateUrl |controller |what it does |img
+|/welcome |location-welcome.html | | static introductory message |image:graphics2/welcome_button_sm.png[]
+|/tracking |location-tracking.html | locationTrackingController | captures device location in PouchDB while showing current location on a map |image:graphics2/tracking_sm.png[]
+|/savedata |location-savedata.html | locationTrackingSaveDataController | Saves location data to Cloudant by replicating from the local PouchDB to a remote Cloudant database account |image:graphics2/saving_sm.png[]
+|/success |location-success.html | locationTrackingSuccessController | Shows metadata about the successful replication |image:graphics2/success_sm.png[]
+|/error |location-error.html | locationTrackingErrorController |Shows metadata about a failed replication | n/a
+|/map |tutorial2-map.html | mapResultController |Shows a map of all location data in the database |image:graphics2/map_sm.png[]
 |=====
 
 == Animating UI changes with the `animationdirective`

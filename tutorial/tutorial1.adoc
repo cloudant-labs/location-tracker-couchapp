@@ -64,7 +64,9 @@ Now you will have a locationtracker directory with a host of directories in it. 
 ----
 
 == Step 2: Logging location
+
 === User interface
+
 Now we get to start writing code. In a CouchApp, all HTML files go in the _attachments directory, so cd there: 
 
  $ cd _attachments
@@ -234,7 +236,7 @@ Note that we don't just save the data as-is. We put them in a specially construc
 
 Also note that we do a little math to round the GPS coordinates to 5 decimal places, and at the same time check to make sure we're not saving the same coordinates we captured last time through the function. These 2 things taken together ensure we only save coordinate changes that represent at least about a meter. That distance is good for changes to a walking pace. If you're going to be biking or driving you may want to modify the code to require a bigger change in coordinate values.
 
-=== Step 3: Road test
+=== Road test
 Let's test out what we have so far by deploying the CouchApp to Cloudant. If you've rummaged around inside the locationtracker directory, you've probably found a lot of other files that were put there by the generate script. We don't need those right now, but we can safely deploy and ignore them. In a real application, you'd want to make sure only the file that were absolutely necessary were included. To deploy the code to the server, run this command from the 'locationtracker' directory: 
 
  $ couchapp push . remote 
@@ -349,6 +351,7 @@ Now if you want, you can deploy this new code to the server and test your work:
 There will be no visible difference from the last deploy (if everything is working correctly), but using your favorite Javascript debugger you should be able to see some interesting new stuff in the `db` object.
 
 == Step 3: Saving data to the Cloud(ant)
+
 The final step in our fleet tracking app is to persist the data collected to the server in our Cloudant database. First, we'll have to open up our database for writing. When we uploaded our CouchApp, we were actually writing to the database, but we were using our username and password for authentication. It would be very bad form to code your system-wide username and password into every app you wrote, so Cloudant provides a quick and easy way to generate an API key that an app can use to authenticate to a single database. You can give the holder of that key read, read/write, or full administrative access to the database. For our purposes, we'll need to generate a key and give it read/write access to the locationtracker database.  
 
 Once again, go into the Cloudant dashboard by accessing this URL: 
