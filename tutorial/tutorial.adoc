@@ -447,7 +447,7 @@ One area where Cloudant/CouchDB excels is in its ability to synchronize changes 
 We  define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we've established a local copy of our database as well as a way to get real-time updates!
 
 .Listing 7: Real-time mapping
-_file: tutorial1-map.html_
+_file: map.html_
 [source,html]
 ----
 <!DOCTYPE html>
@@ -513,11 +513,11 @@ Above it was mentioned that we will display our device location data on the map 
 
 We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
 
-Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `tutorial1-map.html`. Then redeploy the couchapp. Now you have a second URL you can access: 
+Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Then redeploy the couchapp. Now you have a second URL you can access: 
 
- http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/tutorial1-map.html
+ http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/map.html
 
-Which should show you something that looks like Figure 5, my version of the app which you can see live https://rajsingh.cloudant.com/locationtracker/_design/locationtracker/tutorial1-map.html[here].
+Which should show you something that looks like Figure 5, my version of the app which you can see live https://rajsingh.cloudant.com/locationtracker/_design/locationtracker/map.html[here].
 
 image::graphics/map.png[title="Location Tracking Map"]
 
