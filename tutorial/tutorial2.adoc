@@ -98,20 +98,16 @@ The *_Stop and Save data to IBM Cloudant_* button activates the `/savedata` rout
 
 If the process was successful, we see some metadata about how many documents were written to the database, and we get an option to see a map of all the location data saved in the Cloudant database, just like we did at the end of chapter 1. 
 
-
-image::graphics/components.png[title="Application Components"]
-
 .Angular routes
-[cols="2,2,2,2,2", frame="topbot",options="header"]
+[cols="2,2,2,2,2,2,2", frame="topbot"]
 |=====
-|Route |templateUrl |controller |what it does |img
-|/welcome |location-welcome.html | | static introductory message |image:graphics2/welcome_button_sm.png[]
-|/tracking |location-tracking.html | locationTrackingController | captures device location in PouchDB while showing current location on a map |image:graphics2/tracking_sm.png[]
-|/savedata |location-savedata.html | locationTrackingSaveDataController | Saves location data to Cloudant by replicating from the local PouchDB to a remote Cloudant database account |image:graphics2/saving_sm.png[]
-|/success |location-success.html | locationTrackingSuccessController | Shows metadata about the successful replication |image:graphics2/success_sm.png[]
-|/error |location-error.html | locationTrackingErrorController |Shows metadata about a failed replication | n/a
-|/map |tutorial2-map.html | mapResultController |Shows a map of all location data in the database |image:graphics2/map_sm.png[]
+|*Route* |/welcome |/tracking |/savedata |/success |/map |/error
+|*templateUrl* |location-welcome.html |location-tracking.html |location-savedata.html |location-success.html |tutorial2-map.html |location-error.html 
+|*controller* |n/a |locationTrackingController |locationTrackingSaveDataController |locationTrackingSuccessController |mapResultController |locationTrackingErrorController
+|*description* |static introductory message |captures device location in PouchDB while showing current location on a map |Saves location data to Cloudant by replicating from the local PouchDB to a remote Cloudant database account |Shows metadata about the successful replication |Shows a map of all location data in the database |Shows metadata about a failed replication
+| |image:graphics2/welcome_button_sm.png[] |image:graphics2/tracking_sm.png[] |image:graphics2/saving_sm.png[] |image:graphics2/success_sm.png[] |image:graphics2/map_sm.png[] |
 |=====
+
 
 == Animating UI changes with the `animationdirective`
 
