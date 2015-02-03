@@ -6,7 +6,6 @@
 	<title>Location Tracking Geo location demo</title>
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/main.css" type="text/css">
-	<script src="script/pouchdb.js" type="text/javascript"></script>
   </head>
   <body>
   	<div class="container-fluid">
@@ -34,6 +33,7 @@
   		</div>
   	</div>
 
+	<script src="script/pouchdb.min.js" type="text/javascript"></script>
 	<script>
 	if (navigator.geolocation) {
 	  console.log("Geolocation is available");
@@ -47,7 +47,7 @@
 	var session_id = guid();
 	var watchID = null;
 	var db = new PouchDB('localdb');
-	var remotedb = 'https://oullyincentrattlyindinde:rBI18O7B0F8q85uItn4BREtm' +
+	var remotedb = 'https://musesceelylongshountiont:SMkoeguoAdlvPJeITlQ4vaSj' +
 					'@rajsingh.cloudant.com/locationtracker';
 
 	function startWatch() {
@@ -124,6 +124,21 @@
 			document.getElementById('message').innerHTML = 'error replicating: ' + err;
 		});
 	}
+
+   /**
+    * Generates a GUID (globally unique ID) string.
+    * @returns {String} The generated GUID.
+    * @example af8a8416-6e18-a307-bd9c-f2c947bbb3aa
+    * @author Slavik Meltser (slavik@meltser.info).
+    * @link http://slavik.meltser.info/?p=142
+    */
+   function guid() {
+       function _p8(s) {
+           var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+           return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+       }
+       return _p8() + _p8(true) + _p8(true) + _p8();
+   }
 	</script>
 
   </body>
