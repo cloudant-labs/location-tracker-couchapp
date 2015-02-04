@@ -85,20 +85,24 @@ _file: index.html_
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Location Tracker Geo location demo</title>
-	<link rel="stylesheet" 
-             href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style/main.css" type="text/css">
   </head>
   <body>
   	<div class="container-fluid">
   		<h1>Location Capture</h1>
-  		<div style="background-color:#72C7E7;padding:12px">
+  		<div class="gpspanel">
   			<h4>longitude: <span id="x">not recording...</span></h4>
   			<h4>latitude: <span id="y">not recording...</span></h4>
   			<hr/>
-	  		<p><button id="starter" class="btn btn-danger" 
-				onclick="startWatch()">Capture Location</button></p>
-	  		<p><button id="stopper" class="btn btn-danger" 
-				onclick="stopWatch()" disabled>Stop Capture</button></p>
+			<div id="buttons">
+				<p><button id="starter" class="btn btn-danger" 
+                    onclick="startWatch()">Capture Location</button></p>
+				<p><button id="stopper" class="btn btn-danger" 
+                    onclick="stopWatch()" disabled>Stop Capture</button></p>
+				<p><button id="saver" class="btn btn-danger" 
+                    onclick="saveToServer()" disabled>Save to Cloudant</button></p>
+			</div>
 			<p id="message"></p>
   		</div>
   	</div>
@@ -145,6 +149,7 @@ _file: index.html_
 	function startWatch() {
 		document.getElementById('starter').disabled = true;
 		document.getElementById('stopper').disabled = false;
+		document.getElementById('saver').disabled = true;
 		
 		document.getElementById('x').innerHTML = "updating...";
 		document.getElementById('y').innerHTML = "updating...";
@@ -156,11 +161,12 @@ _file: index.html_
 		document.getElementById('x').innerHTML = "permission denied...";
 		document.getElementById('y').innerHTML = "permission denied...";
 		alert('Error' + err.code + ' msg: ' + err.message);
+		document.getElementById('starter').disabled = false;
 	}
 	
 	function doWatch(position) {
-		var lon = Number(Math.round(position.coords.longitude+'e'+4)+'e-'+4);
-		var lat = Number(Math.round(position.coords.latitude+'e'+4)+'e-'+4);
+		var lon = Number(Math.round(position.coords.longitude+'e'+5)+'e-'+5);
+		var lat = Number(Math.round(position.coords.latitude+'e'+5)+'e-'+5);
 		if ( (lon==last_lon) && (lat==last_lat) ) return null;
 		
 		last_lon = lon;
@@ -176,15 +182,15 @@ _file: index.html_
 			}
 		};
 		
-		document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
-		document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
-		document.getElementById('message').innerHTML = 
-			new Date(doc.properties.timestamp*1000);
+        document.getElementById('x').innerHTML = position.coords.longitude;
+        document.getElementById('y').innerHTML = position.coords.latitude;
+        document.getElementById('message').innerHTML = new Date(position.timestamp*1000);
 	}
 
 	function stopWatch() {
 		document.getElementById('starter').disabled = false;
 		document.getElementById('stopper').disabled = true;
+		document.getElementById('saver').disabled = false;
 
 		if ( watchID )
 			navigator.geolocation.clearWatch(watchID);
@@ -234,7 +240,7 @@ As with most things in life, be it sports, house painting, or coding, the hard w
 
 We will only make use of the longitude, latitude and timestamp properties, so in doWatch we save these to a JSON object -- the coords variable -- and display the longitude and latitude on the screen by setting the innerHTML property of our x and y <span>s.  
 
-Note that we don't just save the data as-is. We put them in a specially constructed JSON object that conforms to the http://geojson.org/geojson-spec.html[GeoJSON specification]. Cloudant has made this industry standard way of storing points, lines and polygons a cornerstone of it's support for geographic data, which is on par with the most sophisticated geographic information systems available. By storing geographic data in Cloudant in GeoJSON format, you gain access to special geographic indexing and query functionality that you can't get in any other JSON data store. But that's a topic for another tutorial. Here we won't do anything fancy with geographic indexing or query, but later you'll see that supporting this standard makes mapping trivial.
+Note that we don't just save the data as-is. We put them in a specially constructed JSON object that conforms to the http://geojson.org/geojson-spec.html[GeoJSON specification]. Cloudant has made this industry standard way of storing points, lines and polygons a cornerstone of its support for geographic data, which is on par with the most sophisticated geographic information systems available. By storing geographic data in Cloudant in GeoJSON format, you gain access to special geographic indexing and query functionality that you can't get in any other JSON data store. But that's a topic for another tutorial. Here we won't do anything fancy with geographic indexing or query, but later you'll see that supporting this standard makes mapping trivial.
 
 Also note that we do a little math to round the GPS coordinates to 5 decimal places, and at the same time check to make sure we're not saving the same coordinates we captured last time through the function. These 2 things taken together ensure we only save coordinate changes that represent at least about a meter. That distance is good for changes to a walking pace. If you're going to be biking or driving you may want to modify the code to require a bigger change in coordinate values.
 
@@ -265,11 +271,11 @@ OK, walk over? Now that we have some great data, we'll want to save it so that w
 NOTE: In version 4 of PouchDB, replicating whenever the device gets a network connection will be automatic, requiring no extra coding.
 ****
 
-First, let's start storing the coordinates in the browser in PouchDB. Add PouchDB support by including the Javascript library in the web page, which you can do by putting this line right before your ending </head> tag: 
+First, let's start storing the coordinates in the browser in PouchDB. Add PouchDB support by including the Javascript library in the web page, which you can do by putting this line right before your beginning <script> tag: 
 
 [source,html]
 ----
-<script src="http://cdn.jsdelivr.net/pouchdb/3.0.6/pouchdb.min.js"></script> 
+<script src="//cdn.jsdelivr.net/pouchdb/3.3.0/pouchdb.min.js"></script> 
 ----
 
 Then, in your `<script>` code, right after `'watchID = null'`, add this line: 
@@ -286,25 +292,24 @@ Now, in `doWatch`, let's add code to save each coordinate reading to PouchDB. Ch
 This matches the user's expectation that whatever they're seeing is being recorded. If we get an error writing to the database, we won't show them the new coordinates we got from the device, because that would break the implicit contract with the user that we've created. This is a very simple example of making sure your application is attuned to your user's expectations, but the concept is crucial to well-designed, intuitive apps.
 
 .Listing 5: PouchDB-aware doWatch function
-_file: index.html_
 [source,html]
 ----
 <!DOCTYPE html>
 <html lang="en">
   <head>
 	...
-	<script src="http://cdn.jsdelivr.net/pouchdb/3.0.6/pouchdb.min.js"></script>
   </head>
   <body>
   <div class="container-fluid">...</div>
+	<script src="//cdn.jsdelivr.net/pouchdb/3.3.0/pouchdb.min.js"></script>
     <script>
     ...
     function startWatch() {...}
     function watchError(err) {...}
 
     function doWatch(position) {
-	var lon = Number(Math.round(position.coords.longitude+'e'+4)+'e-'+4);
-	var lat = Number(Math.round(position.coords.latitude+'e'+4)+'e-'+4);
+	var lon = Number(Math.round(position.coords.longitude+'e'+5)+'e-'+5);
+	var lat = Number(Math.round(position.coords.latitude+'e'+5)+'e-'+5);
 	if ( (lon==last_lon) && (lat==last_lat) ) return null;
 	
 	last_lon = lon;
@@ -322,13 +327,11 @@ _file: index.html_
 	};
 		
 	db.post(coord, function callback(err, response) {
-		if ( err ) { 
-			document.getElementById('message').innerHTML = ('POST ERROR: '+err);
-		}
+		if ( err ) { if ( err ) { alert('POST ERROR: '+err); } }
 
 		db.get(response.id, function callback(err, doc) {
 			if ( err ) { 
-			  document.getElementById('message').innerHTML = ('POST ERROR: '+err);
+			  document.getElementById('message').innerHTML = ('ERROR GETting doc from pouchdb: '+err);
 			}
 			
 			document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
@@ -380,7 +383,7 @@ add a line initializing the remote Cloudant database:
 var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker'; 
 ----
  
-Then add the `saveToServer` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the “Save” button when it makes sense. The code for the full HTML file is https://github.com/rajrsingh/locationtracker/blob/master/tutorial/index_1.html[here] in the https://github.com/rajrsingh/locationtracker[GitHub repo for this tutorial].
+Then add the `saveToServer` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the “Save” button when it makes sense. The code for the full HTML file is `_attachments/index.html` in the https://github.com/cloudant-labs/location-tracker-couchapp[GitHub repo for this tutorial].
 
 The `saveToServer` function has one major PouchDB call, `replicate.to`. It's only argument is the database to replicate to, which we specified earlier. The anonymous functions that handle callbacks on the 'complete' and 'error' return values simply report to the user what is happening. 
 
@@ -401,16 +404,16 @@ _file: index.html_
 
     function stopWatch() {...}
     function saveToServer() {
-	document.getElementById('saver').disabled = true;
-	document.getElementById('message').innerHTML = 'Saving position data to Cloudant...';
-	 
-	db.replicate.to(remotedb)
-	  .on('complete', function(info){
-		msg = ' ...replicated ' + info.docs_written + ' docs at ' + info.start_time;
-		document.getElementById('message').innerHTML = msg;})
-	  .on('error', function(err) {
-		document.getElementById('message').innerHTML = 'error replicating: ' + err;
-	  });
+        document.getElementById('saver').disabled = true;
+        document.getElementById('message').innerHTML = 'Saving position data to Cloudant...';
+
+        db.replicate.to(remotedb)
+          .on('complete', function(info){
+            msg = ' ...replicated ' + info.docs_written + ' docs at ' + info.start_time;
+            document.getElementById('message').innerHTML = msg;})
+          .on('error', function(err) {
+            document.getElementById('message').innerHTML = 'error replicating: ' + err;
+          });
     }
   </script>
 </body>
@@ -458,17 +461,18 @@ _file: map.html_
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Location Tracking Map</title>
-	<link rel="stylesheet" href="style/bootstrap.css" type="text/css" />
-	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" 
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" 
+        type="text/css" />
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" 
 		type="text/css" />
-	<script src="http://cdn.jsdelivr.net/pouchdb/3.0.6/pouchdb.min.js"></script>
- 	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 </head>
 <body>
 	<div class="container">
 		<h1>Location Tracking Map</h1>
 		<div id="map" style="width: 400px; height: 400px"></div>
 	</div>
+	<script src="//cdn.jsdelivr.net/pouchdb/3.3.0/pouchdb.min.js"></script>
+ 	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	<script>
 	var p = 'https://$USERNAME.cloudant.com/locationtracker';
 	var db = new PouchDB(p);	
@@ -515,7 +519,7 @@ Above it was mentioned that we will display our device location data on the map 
 
 We are also wrapping the whole operation in an `if` statement so that we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
 
-Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Then redeploy the couchapp. Now you have a second URL you can access: 
+Now let's deploy the mapping app. Take the code in Listing 7 and paste (or type) it into a file called `map.html`. Edit `map.html` to exchange $USERNAME for your Cloudant username, then redeploy the couchapp. Now you have a second URL you can access: 
 
  http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/map.html
 
