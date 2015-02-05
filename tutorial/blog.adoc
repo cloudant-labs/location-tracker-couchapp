@@ -1,5 +1,9 @@
+== https://github.com/cloudant-labs/location-tracker-couchapp/blob/master/tutorial/tutorial.adoc[Location Tracker Tutorial: Chapter 1]
+
 If you want to truly understand your business assets -- whether those assets are customers, trucks, industrial equipment or IoT devices -- you have to know where they are. Location is a critical part of gaining insight into all facets of one's business. To take a retail example, how can you deliver a compelling message to a shopper without knowing whether they are at home, work, or in a mall? Aren't the messages you want to deliver very different in those scenarios? Or look at a company that manages a trucking fleet. Don't you want to know where those trucks are at all times? 
 
 Capturing, storing and managing this kind of information used to be difficult and expensive. But with Cloudant, HTML5 and Javascript building location-aware systems is within the reach of any web developer. Join us as we embark on a three-part tutorial series covering all facets of tracking anything that moves. In chapter 1 we'll talk about the basic building blocks of capturing location in a mobile web browser using the Geolocation API. Then in chapter 2 we'll add style and polish by redesigning the app using the AngularJS framework. Finally in chapter 3 we'll focus in on security and look at different ways to handle authentication with Cloudant and NodeJS. 
 
 While this tutorial app uses a phone for the user interface, the same principles can be applied to UAVs, sensors in vehicles, and more. Start learning the basics with https://github.com/cloudant-labs/location-tracker-couchapp/blob/master/tutorial/tutorial.adoc[chapter 1]. Enjoy!
+
+*https://github.com/cloudant-labs/location-tracker-couchapp/blob/master/tutorial/tutorial.adoc[Location Tracker Tutorial: Chapter 1]*
