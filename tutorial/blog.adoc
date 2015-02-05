@@ -1,4 +1,4 @@
-= Tracking and Mapping Things that Move: Cloudant's Location Tracker
+= Track & map things that move with HTML5, Javascript and Cloudant
 
 If you want to truly understand your business assets -- whether those assets are customers, trucks, industrial equipment or IoT devices -- you have to know where they are. Location is a critical part of gaining insight into all facets of one's business. To take a retail example, how can you deliver a compelling message to a shopper without knowing whether they are at home, work, or in a mall? Aren't the messages you want to deliver very different in those scenarios? Or look at a company that manages a trucking fleet. Don't you want to know where those trucks are at all times? 
 
