@@ -86,19 +86,14 @@ a, a:hover, a:active {
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
 }
-
-
-
 .btn:hover {
     background-color: #F3622D;
     color: #fff;
 }
-
-.btn:disabled{
-	background-color: #333;
+.btn:disabled {
+    background-color: #333;
     color: #666;
 }
-
 .btn-block {
     display: block;
     width: 100%;
@@ -153,19 +148,85 @@ a, a:hover, a:active {
     position: absolute;
     bottom: 0;
 }
-
 #message {
     width: 100%;
-display: block;
-position: absolute;
-color: #717981;
-background-color: #E3E5ED;
-margin: 0;
-padding: 16px 0;
-text-align: center;
-font-size: 12px;
-bottom: -21px;
-left: 0;
-height: 28px;
-border-top: 1px solid #ccc;
+    display: block;
+    position: absolute;
+    color: #717981;
+    background-color: #E3E5ED;
+    margin: 0;
+    padding: 16px 0;
+    text-align: center;
+    font-size: 12px;
+    bottom: -21px;
+    left: 0;
+    height: 28px;
+    border-top: 1px solid #ccc;
+}
+.container-map {
+    position: relative;
+    display: block;
+    top: 0;
+    height: 100%;
+    width: 100%;
+}
+#map {
+    background-color: #221e1f;
+    height: auto;
+    display: block;
+    top: 48px;
+    bottom: 0px;
+    position: absolute;
+    width: 100%;
+}
+/* Leaflet Control Overrides */
+
+.leaflet-control-container .leaflet-control-locate a {
+    margin-left: 0px;
+}
+.leaflet-control-container .leaflet-bar {
+    border-radius: 0;
+}
+.leaflet-control-container .leaflet-bar a, .leaflet-control-container .leaflet-bar a:hover {
+    border-radius: 0;
+    background-color: #222b33;
+    border-bottom: none;
+    width: 38px;
+    height: 38px;
+    line-height: 34px;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #bababa;
+    font-size: 32px;
+}
+.leaflet-control-container .leaflet-bar a.leaflet-disabled {
+    cursor: default;
+    background-color: #404E5B;
+    background-color: #222b33;
+}
+.leaflet-control-container .leaflet-bar a:first-child, .leaflet-control-container .leaflet-bar a:last-child {
+    border-radius: 0;
+}
+.leaflet-control-container .leaflet-control-locate.active.following a {
+    color: #e5603d;
+}
+.leaflet-control-container .leaflet-control-locate.active a {
+    color: #3a8cc0;
+}
+.leaflet-control-container .fa {
+    font-size: 22px;
+}
+.leaflet-popup-pane .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: #222b33;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+}
+.leaflet-popup-pane .leaflet-popup-content-wrapper {
+    padding: 8px;
+    text-align: left;
+    border-radius: 0;
+}
+.leaflet-popup-pane span {
+    color: #999;
+    line-height: 1.6;
 }
