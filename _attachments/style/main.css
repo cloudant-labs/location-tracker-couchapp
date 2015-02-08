@@ -1,12 +1,171 @@
+html, body {
+    height: 100%;
+}
 body {
-	background-color: #1B5789;
+    margin: 0;
+    font-family: 'helvetica-neue', helvetica;
+    color: #f2f2f2;
+    background: #245a85;
+    font-size: 14px;
+    line-height: 1.6;
+}
+nav {
+    display: block;
+    width: 100%;
+    position: fixed;
+    height: 48px;
+    background-color: #222b33; //rgba(34, 30, 31, 0.8);
+    ;
+    z-index: 1;
+}
+.container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+.container:before, .container:after, .container-fluid:before, .container-fluid:after, .row:before, .row:after {
+    content: " ";
+    display: table;
+}
+#cloudant-logo {
+    background: url('../images/sprite.png') no-repeat -178px 0px;
+    width: 44px;
+    height: 44px;
+    position: absolute;
+    display: inline-block;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    background-size: cover;
+    top: 2px;
+    left: 5px;
+}
+nav .page-title {
+    position: relative;
+    height: inherit;
+    font-size: 10px;
+    font-weight: 400;
+    color: #bababa;
+    display: block;
+    text-align: center;
+    line-height: 48px;
+    text-transform: uppercase;
+}
+a {
+    color: #0ce3ac;
+}
+a, a:hover, a:active {
+    text-decoration: none;
+}
+.btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 200;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 24px;
+    font-size: 14px;
+    line-height: 1.4;
+    border-radius: 0;
+    color: #f2f2f2;
+    border-top: 1px solid #666;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+
+
+.btn:hover {
+    background-color: #F3622D;
     color: #fff;
 }
 
-.gpspanel {
-    background-color:#72C7E7;
-    padding:12px;
-    border-radius: 12px;
-    -moz-border-radius: 12px;
+.btn:disabled{
+	background-color: #333;
+    color: #666;
 }
 
+.btn-block {
+    display: block;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn-primary, .btn-primary.active {
+    background-color: #3a8cc0;
+}
+.btn-info, .btn-info.active {
+    background-color: #329898;
+}
+.btn-save, .btn-save.active {
+    background-color: #329898;
+}
+.location-tracker {
+    bottom: 228px;
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 48px;
+}
+.long-lat-container {
+    position: relative;
+    width: 100%;
+    display: table;
+    height: 100%;
+    background-color: #f2f2f2;
+}
+.longitude, .latitude {
+    top: 0;
+    position: relative;
+    vertical-align: middle;
+    height: inherit;
+    display: table-cell;
+    width: 50%;
+    text-align: center;
+    font-size: 28px;
+    line-height: 8px;
+    color: #717981;
+}
+.latitude {
+    border-left: 1px solid #ccc;
+}
+.longitude span, .latitude span {
+    font-size: 16px;
+    color: #909aa5;
+    font-weight: 200;
+}
+.button-bottom {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+#message {
+    width: 100%;
+display: block;
+position: absolute;
+color: #717981;
+background-color: #E3E5ED;
+margin: 0;
+padding: 16px 0;
+text-align: center;
+font-size: 12px;
+bottom: -21px;
+left: 0;
+height: 28px;
+border-top: 1px solid #ccc;
+}
