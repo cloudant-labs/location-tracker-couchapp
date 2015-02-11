@@ -16,4 +16,4 @@ An extensive tutorial describing the app may be found in the [tutorial](./tutori
 
 ## License
 
-Apache 2.0
+[MIT](http://opensource.org/licenses/MIT).
