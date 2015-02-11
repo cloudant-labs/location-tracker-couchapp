@@ -438,7 +438,7 @@ We'll once again use PouchDB as our local in-browser database, and it will once 
 
 The code for the real-time map is shown in Listing 7. Let's step through it from top to bottom.  
 
-Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet, window="_new"]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
+Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet, role="external", window="_blank"]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
 
 Now we'll create our user interface. Leaflet handles all the mapping components, so let's just give Leaflet a `<div>` to work with. We'll give it the id of “map” and set it to be 400 pixels square. 
 
