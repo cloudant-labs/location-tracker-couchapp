@@ -1,6 +1,7 @@
 image:https://cloudant.com/wp-content/themes/cloudant/images/ibm_cloudant.png["IBM Cloudant"]
 
 = Location Tracker Tutorial: Part 1
+_Track & map things that move with HTML5, JavaScript & Cloudant_
 
 In this tutorial, we'll build a mobile app in HTML5 and Javascript that records the device's location and saves it to Cloudant. Then we'll build a separate mapping app that reads location information from the Cloudant database and tracks those movements on a map in real time. Note that these two apps are completely separate. The movement tracking map could be mapping hundreds of devices that are storing their locations in the database, but it knows nothing about the actual devices out in the field. It's just reading location data from the database. The two apps will seem connected, however, because the updates occur so seamlessly. All the code for this tutorial can be forked from GitHub from https://github.com/cloudant-labs/location-tracker-couchapp[this repository]. 
 
@@ -438,7 +439,7 @@ We'll once again use PouchDB as our local in-browser database, and it will once 
 
 The code for the real-time map is shown in Listing 7. Let's step through it from top to bottom.  
 
-Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet, role="external", window="_blank"]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
+Most of the sophisticated mapping functionality is handled by the excellent Javascript mapping library, http://leafletjs.com/[Leaflet]. We include the library right after including the PouchDB library. Leaflet also needs a little CSS for its mapping interface, so we include that in the `<head>` as well. 
 
 Now we'll create our user interface. Leaflet handles all the mapping components, so let's just give Leaflet a `<div>` to work with. We'll give it the id of “map” and set it to be 400 pixels square. 
 
