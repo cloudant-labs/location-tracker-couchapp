@@ -26,7 +26,8 @@
     <script src="script/pouchdb.min.js" type="text/javascript"></script>
     <script src="script/leaflet.js" type="text/javascript"></script>
     <script>
-    var p = 'https://$USERNAME.cloudant.com/locationtracker';
+    // var p = 'https://$USERNAME.cloudant.com/locationtracker';
+    var p = 'https://location-tracker.cloudant.com/locationtracker';
     var db = new PouchDB(p);
     db.changes({
         include_docs: true,
@@ -35,13 +36,14 @@
 
     var map = L.map('map').setView([42.36, -71.1], 10);
 
-    L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+    var at = 'pk.eyJ1IjoicmFqcnNpbmdoIiwiYSI6ImpzeDhXbk0ifQ.VeSXCxcobmgfLgJAnsK3nw';
+    L.tileLayer('https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token='+at, {
         maxZoom: 20,
         attribution: 'Map data &copy; ' +
             '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>', 
         detectRetina: true,
-        id: 'examples.map-20v6611k'
+        id: 'mapbox.streets-basic'
     }).addTo(map);
 
     var movementLayer = L.geoJson(null, {

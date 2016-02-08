@@ -56,7 +56,8 @@
     var session_id = guid();
     var watchID = null;
     var db = new PouchDB('localdb');
-    var remotedb = 'https://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker';
+    // var remotedb = 'https://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker';
+    var remotedb = 'https://ectlecandshouttedidereft:CsAB82ljPE1JAmuwOEkv3fsn@location-tracker.cloudant.com/locationtracker';
 
     function startWatch() {
         document.getElementById('starter').disabled = true;
