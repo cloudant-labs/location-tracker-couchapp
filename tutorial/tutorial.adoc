@@ -468,7 +468,7 @@ _file: map.html_
 ----
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-<head>
+  <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Location Tracking Map</title>
@@ -476,8 +476,8 @@ _file: map.html_
         type="text/css" />
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" 
 		type="text/css" />
-</head>
-<body>
+  </head>
+  <body>
 	<div class="container">
 		<h1>Location Tracking Map</h1>
 		<div id="map" style="width: 400px; height: 400px"></div>
@@ -510,7 +510,8 @@ _file: map.html_
 	}
 	</script>
 	
-</body>
+  </body>
+</html>
 ----
 
 Next, we initialize the map with this line of code: 
