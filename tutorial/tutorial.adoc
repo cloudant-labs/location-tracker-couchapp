@@ -533,7 +533,7 @@ Now let's deploy the mapping app. Take the code in Listing 7 and paste or type i
 
 which should show you something that looks like Figure 5, the sample version of the app which you can see live https://rajsingh.cloudant.com/locationtracker/_design/locationtracker/map.html[here].
 
-image::graphics/map.png[title="Location Tracking Map"]
+image::graphics/map.jpg[title="Location Tracking Map"]
 
 This app is pretty slick, and we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works great for hundreds or even thousands of points, but you could manage millions of locations and handle very complex variables with some more advanced techniques. For example, say you want to create a geospatial index to retrieve locations in a defined area.  A Cloudant Search index lets you retrieve spatial data within a bounding rectangle, but what about irregular areas like a town boundary or a sales district? To retrieve data within an arbitrary polygon like that, you could use *Cloudant Geo*, an advanced index that adds powerful geospatial data indexing and query features. https://cloudant.com/geospatial/[Get more information on Cloudant Geo here].
 
