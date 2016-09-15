@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="images/location_tracker_appicon.png" />
+    <title>Location Tracking Geo location demo</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+</head>
+
+<body>
+    <nav>
+        <div id="cloudant-logo">
+            <!-- * -->
+        </div>
+        <div class="page-title">Location Tracker</div>
+    </nav>
+    <div class="location-tracker">
+        <div class="long-lat-container">
+            <div class="longitude">
+                <span>Longitude</span>
+                <p id="x" class="longitude-coordinate">&nbsp;</p>
+            </div>
+            <div class="latitude">
+                <span>Latitude</span>
+                <p id="y" class="latitude-coordinate">&nbsp;</p>
+            </div>
+            <p id="message">&nbsp;</p>
+        </div>
+    </div>
+
+    <div id="buttons" class="button-bottom">
+        <button id="starter" class="btn btn-block btn-primary" onclick="startWatch()">Capture Location</button>
+        <button id="stopper" class="btn btn-block btn-primary" onclick="stopWatch()" disabled>Stop Capture</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/pouchdb/6.0.4/pouchdb.min.js"></script>
+    <script>
+        if (navigator.geolocation) {
+            console.log("Geolocation is available");
+        } else {
+            alert("Geolocation IS NOT available!");
+            document.getElementById('starter').disabled = true;
+        }
+
+        var last_lon = 0;
+        var last_lat = 0;
+        var watchID = null;
+        var db = new PouchDB('locationdb');
+
+        function startWatch() {
+            document.getElementById('starter').disabled = true;
+            document.getElementById('stopper').disabled = false;
+
+            document.getElementById('x').innerHTML = "updating...";
+            document.getElementById('y').innerHTML = "updating...";
+
+            watchID = navigator.geolocation.watchPosition(doWatch, watchError);
+        }
+
+        function doWatch(position) {
+            var lon = Number(Math.round(position.coords.longitude + 'e' + 5) + 'e-' + 5);
+            var lat = Number(Math.round(position.coords.latitude + 'e' + 5) + 'e-' + 5);
+            if ((lon == last_lon) && (lat == last_lat)) return null;
+
+            last_lon = lon;
+            last_lat = lat;
+            var coord = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [lon, lat]
+                },
+                "properties": {
+                    "timestamp": position.timestamp
+                }
+            };
+
+            db.post(coord, function callback(err, response) {
+                if (err) {
+                    alert('POST ERROR: ' + err);
+                }
+
+                db.get(response.id, function callback(err, doc) {
+                    if (err) {
+                        console.log('ERROR: ' + err);
+                    }
+
+                    console.log('GOT: ' + JSON.stringify(doc));
+                    document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
+                    document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
+                    document.getElementById('message').innerHTML = new Date(doc.properties.timestamp * 1000);
+                });
+            });
+        }
+
+        function watchError(err) {
+            document.getElementById('x').innerHTML = "permission denied...";
+            document.getElementById('y').innerHTML = "permission denied...";
+            alert('Error' + err.code + ' msg: ' + err.message);
+            document.getElementById('starter').disabled = false;
+        }
+
+        function stopWatch() {
+            document.getElementById('starter').disabled = false;
+            document.getElementById('stopper').disabled = true;
+
+            if (watchID)
+                navigator.geolocation.clearWatch(watchID);
+        }
+    </script>
+
+</body>
+
+</html>
