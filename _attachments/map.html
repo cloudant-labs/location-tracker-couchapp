@@ -27,7 +27,7 @@
     <script src="script/leaflet.js" type="text/javascript"></script>
     <script>
     // var p = 'https://$USERNAME.cloudant.com/locationtracker';
-    var p = 'https://location-tracker.cloudant.com/locationtracker';
+    var p = 'https://' + window.location.host + '/' + window.location.pathname.split('/')[1];
     var db = new PouchDB(p);
     db.changes({
         include_docs: true,

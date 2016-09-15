@@ -453,7 +453,7 @@ NOTE: *Cloudant and real-time updates*
 One area where Cloudant/CouchDB excels is in its ability to synchronize changes between databases. Leveraging the database's change feed, clients can poll for database updates and pull down only the small amount of information that's changed since the last update.
 ****
 
-We  define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we establish a local copy of our database and a way to get real-time updates!
+We define our PouchDB database to be remote. This time we don't need to use our API key because we're only reading, and we set the database up to be world-readable earlier. Then, with the db.changes function, we tell PouchDB to “listen” for changes and call the updateMovingLayer function whenever a change occurs. It's hard to underestimate how cool this little function is. In one line of code we establish a local copy of our database and a way to get real-time updates!
 
 .Listing 7: Real-time mapping
 _file: map.html_
@@ -467,16 +467,15 @@ _file: map.html_
 	<title>Location Tracking Map</title>
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" 
         type="text/css" />
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" 
-		type="text/css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
   </head>
   <body>
 	<div class="container">
 		<h1>Location Tracking Map</h1>
 		<div id="map" style="width: 400px; height: 400px"></div>
 	</div>
-	<script src="//cdn.jsdelivr.net/pouchdb/3.3.0/pouchdb.min.js"></script>
- 	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+	<script src="https://cdn.jsdelivr.net/pouchdb/6.0.4/pouchdb.min.js"></script>
+ 	<script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
 	<script>
 	var p = 'https://$USERNAME.cloudant.com/locationtracker';
 	var db = new PouchDB(p);	
@@ -484,13 +483,15 @@ _file: map.html_
 	
 	var map = L.map('map').setView([42.36, -71.1], 10);
 
-	L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+	L.tileLayer('https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 	  maxZoom: 18,
-	  attribution: 'Map data &copy; ' + 
-	    '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + 
+	  attribution: 'Map data &copy; ' +
+	    '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 	    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-	  detectRetina: true, 
-	  id: 'examples.map-20v6611k'
+	  detectRetina: true,
+      maxZoom: 18,
+	  id: 'mapbox.pirates',
+      accessToken: 'insert-your-access-token-here'
 	}).addTo(map);
 
 	var movementLayer = L.geoJson().addTo(map);
@@ -516,15 +517,17 @@ var map = L.map('map').setView([42.36, -71.1], 10);
 
 This is a call to the Leaflet library. The `L.map` constructor takes as its only required argument the id of the HTML DOM element in which to draw the map. The `setView` function starts the map off with a view of downtown Boston, Massachusetts (right next to Cloudant World Headquarters by the way) by specifying a center point of 42.36, -71.1 and a zoom level of 10. You can set this to anywhere you'd like. But we'll also make the map move to show only our device locations as soon as we get data from the server. 
 
-Now we'll add geographic data to the map. The `L.tileLayer` command adds a basic street map so that our device locations aren't floating on a blank background. The movementLayer variable is defined as a http://geojson.org[GeoJSON] layer. We initialize it with an empty constructer -- `L.geoJson()` -- meaning there's no data in the layer yet, and add it to the map. We'll add data to it as we receive changes from the Cloudant database through that `updateMovingLayer` callback function we set up with the PouchDB `changes` function. 
+Now we'll add geographic data to the map. The `L.tileLayer` command adds a pirate-style street map from https://www.mapbox.com[MapBox] (if you want a boring, basic street map change the `id` to mapbox.streets` instead of `mapbox.pirates`) so that our device locations aren't floating on a blank background. You'll need a free Mapbox developer account to get an access token for this feature, so go to https://www.mapbox.com/studio/signup/[the signup page] and get one. 
+
+The movementLayer variable is defined as a http://geojson.org[GeoJSON] layer. We initialize it with an empty constructer -- `L.geoJson()` -- meaning there's no data in the layer yet, and add it to the map. We'll add data to it as we receive changes from the Cloudant database through that `updateMovingLayer` callback function we set up with the PouchDB `changes` function. 
 
 The final piece of magic is the `updateMovingLayer` function, which gets called when any document in the Cloudant database changes. The input argument is a JSON document that contains the document that has changed along with some metadata about the change.  
 
 As mentioned, we show our device location data on the map using a GeoJSON layer. The good news is that the Leaflet community has already built support for adding GeoJSON data to a map, so Cloudant's support for this standard really pays off here. All we have to do is add the change document to the map with no extra data massaging with the command `movementLayer.addData(change.doc)`. The next command, `map.fitBounds(movementLayer.getBounds())`, makes the map zoom to include all the data points, so we're sure to see everything available.
 
-We're also wrapping the whole operation in an `if` statement so  we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
+We're also wrapping the whole operation in an `if` statement so we can ignore changes involving document deletes (we actually should handle these, but doing that properly is beyond the scope of this tutorial), and changes to documents that aren't GeoJSON 'Features'.
 
-Now let's deploy the mapping app. Take the code in Listing 7 and paste or type it into a file called `map.html`. Edit `map.html` to exchange $USERNAME for your Cloudant username, then redeploy the couchapp. Now you have a second URL you can access: 
+Now let's deploy the mapping app. Take the code in Listing 7 and paste or type it into a file called `map.html`. Edit `map.html` to replace $USERNAME with your Cloudant username, then redeploy the couchapp. Now you have a second URL you can access: 
 
  http://$USERNAME.cloudant.com/locationtracker/_design/locationtracker/map.html
 
@@ -532,6 +535,6 @@ which should show you something that looks like Figure 5, the sample version of 
 
 image::graphics/map.png[title="Location Tracking Map"]
 
-This app is pretty slick, and we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works great for hundreds or even thousands of points, but you could manage millions of locations and handle very complex variables with some more advanced techniques. For example, say you want to create a geospatial index to retrieve locations in a defined area.  Basic Cloudant service lets you retrieve spatial data within a bounding rectangle, but what about irregular areas like a town boundary or a sales district? To retrieve data within an arbitrary polygon like that, you could use *Cloudant Geo*, an advanced service that adds powerful geospatial data indexing and query features. https://cloudant.com/request-cloudant-geo/[Request more information on Cloudant Geo here].
+This app is pretty slick, and we've only scratched the surface of Cloudant's geospatial data management capabilities. What we've done works great for hundreds or even thousands of points, but you could manage millions of locations and handle very complex variables with some more advanced techniques. For example, say you want to create a geospatial index to retrieve locations in a defined area.  A Cloudant Search index lets you retrieve spatial data within a bounding rectangle, but what about irregular areas like a town boundary or a sales district? To retrieve data within an arbitrary polygon like that, you could use *Cloudant Geo*, an advanced index that adds powerful geospatial data indexing and query features. https://cloudant.com/geospatial/[Get more information on Cloudant Geo here].
 
 Keep building on this app. Move on to https://github.com/cloudant-labs/location-tracker-angular/blob/master/tutorial/tutorial.adoc[Part 2] of this tutorial and learn how to create a polished single-page mobile web app with Angular JS.

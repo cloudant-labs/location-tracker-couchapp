@@ -12,146 +12,115 @@
 </head>
 
 <body>
-        <nav>
-            <div id="cloudant-logo">
-                <!-- * -->
-            </div>
-            <div class="page-title">Location Tracker</div>
-        </nav>
-        <div class="location-tracker">
-            <div class="long-lat-container">
-                <div class="longitude">
-                    <span>Longitude</span>
-                    <p id="x" class="longitude-coordinate">&nbsp;</p>
-                </div>
-                <div  class="latitude">
-                    <span>Latitude</span>
-                    <p id="y" class="latitude-coordinate">&nbsp;</p>
-                </div>
-                <p id="message">&nbsp;</p>
-            </div>
-            
+    <nav>
+        <div id="cloudant-logo">
+            <!-- * -->
         </div>
-        <div id="buttons" class="button-bottom">
-
-                <button id="starter" class="btn btn-block btn-primary" onclick="startWatch()">Capture Location</button>
-
-                <button id="stopper" class="btn btn-block btn-primary" onclick="stopWatch()" disabled>Stop Capture</button>
-
-                <button id="saver" class="btn btn-block btn-primary" onclick="saveToServer()" disabled>Save to Cloudant</button>
-
+        <div class="page-title">Location Tracker</div>
+    </nav>
+    <div class="location-tracker">
+        <div class="long-lat-container">
+            <div class="longitude">
+                <span>Longitude</span>
+                <p id="x" class="longitude-coordinate">&nbsp;</p>
             </div>
+            <div class="latitude">
+                <span>Latitude</span>
+                <p id="y" class="latitude-coordinate">&nbsp;</p>
+            </div>
+            <p id="message">&nbsp;</p>
+        </div>
+    </div>
 
-    <script src="script/pouchdb.min.js" type="text/javascript"></script>
+    <div id="buttons" class="button-bottom">
+        <button id="starter" class="btn btn-block btn-primary" onclick="startWatch()">Capture Location</button>
+        <button id="stopper" class="btn btn-block btn-primary" onclick="stopWatch()" disabled>Stop Capture</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/pouchdb/6.0.4/pouchdb.min.js"></script>
     <script>
-    if (navigator.geolocation) {
-        console.log("Geolocation is available");
-    } else {
-        alert("Geolocation IS NOT available!");
-        document.getElementById('starter').disabled = true;
-    }
+        if (navigator.geolocation) {
+            console.log("Geolocation is available");
+        } else {
+            alert("Geolocation IS NOT available!");
+            document.getElementById('starter').disabled = true;
+        }
 
-    var last_lon = 0;
-    var last_lat = 0;
-    var session_id = guid();
-    var watchID = null;
-    var db = new PouchDB('localdb');
-    // var remotedb = 'https://$USERNAME:$PASSWORD@$USERNAME.cloudant.com/locationtracker';
-    var remotedb = 'https://ectlecandshouttedidereft:CsAB82ljPE1JAmuwOEkv3fsn@location-tracker.cloudant.com/locationtracker';
+        var last_lon = 0;
+        var last_lat = 0;
+        var watchID = null;
+        var db = new PouchDB('locationdb');
+        // var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker';
+        var remotedb = 'https://mantonstilstinglingstrin:7d57e403b39d5e67e69323353d4e30af7caf553f@rajsingh.cloudant.com/locationtracker';
+        console.log('REMOTEDB: ' + remotedb);
+        PouchDB.sync(db, remotedb, {live:true,retry:true}, syncError);
 
-    function startWatch() {
-        document.getElementById('starter').disabled = true;
-        document.getElementById('stopper').disabled = false;
-        document.getElementById('saver').disabled = true;
+        function startWatch() {
+            document.getElementById('starter').disabled = true;
+            document.getElementById('stopper').disabled = false;
 
-        document.getElementById('x').innerHTML = "updating...";
-        document.getElementById('y').innerHTML = "updating...";
+            document.getElementById('x').innerHTML = "updating...";
+            document.getElementById('y').innerHTML = "updating...";
 
-        watchID = navigator.geolocation.watchPosition(doWatch, watchError);
-    }
+            watchID = navigator.geolocation.watchPosition(doWatch, watchError);
+        }
 
-    function doWatch(position) {
-        var lon = Number(Math.round(position.coords.longitude + 'e' + 5) + 'e-' + 5);
-        var lat = Number(Math.round(position.coords.latitude + 'e' + 5) + 'e-' + 5);
-        if ((lon == last_lon) && (lat == last_lat)) return null;
+        function doWatch(position) {
+            var lon = Number(Math.round(position.coords.longitude + 'e' + 5) + 'e-' + 5);
+            var lat = Number(Math.round(position.coords.latitude + 'e' + 5) + 'e-' + 5);
+            if ((lon == last_lon) && (lat == last_lat)) return null;
 
-        last_lon = lon;
-        last_lat = lat;
-        var coord = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [lon, lat]
-            },
-            "properties": {
-                "session_id": session_id,
-                "timestamp": position.timestamp
-            }
-        };
+            last_lon = lon;
+            last_lat = lat;
+            var coord = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [lon, lat]
+                },
+                "properties": {
+                    "timestamp": position.timestamp
+                }
+            };
 
-        db.post(coord, function callback(err, response) {
-            if (err) {
-                alert('POST ERROR: ' + err);
-            }
-
-            db.get(response.id, function callback(err, doc) {
+            db.post(coord, function callback(err, response) {
                 if (err) {
-                    console.log('ERROR: ' + err);
+                    alert('POST ERROR: ' + err);
                 }
 
-                console.log('GOT: ' + JSON.stringify(doc));
-                document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
-                document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
-                document.getElementById('message').innerHTML = new Date(doc.properties.timestamp * 1000);
+                db.get(response.id, function callback(err, doc) {
+                    if (err) {
+                        console.log('ERROR: ' + err);
+                    }
+
+                    console.log('GOT: ' + JSON.stringify(doc));
+                    document.getElementById('x').innerHTML = doc.geometry.coordinates[0];
+                    document.getElementById('y').innerHTML = doc.geometry.coordinates[1];
+                    document.getElementById('message').innerHTML = new Date(doc.properties.timestamp * 1000);
+                });
             });
-        });
-    }
-
-    function watchError(err) {
-        document.getElementById('x').innerHTML = "permission denied...";
-        document.getElementById('y').innerHTML = "permission denied...";
-        alert('Error' + err.code + ' msg: ' + err.message);
-        document.getElementById('starter').disabled = false;
-    }
-
-    function stopWatch() {
-        document.getElementById('starter').disabled = false;
-        document.getElementById('stopper').disabled = true;
-        document.getElementById('saver').disabled = false;
-
-        if (watchID)
-            navigator.geolocation.clearWatch(watchID);
-    }
-
-    function saveToServer() {
-        document.getElementById('saver').disabled = true;
-        document.getElementById('message').innerHTML = 'Saving positioning data to Cloudant...';
-
-        db.replicate.to(remotedb).on('complete', function(info) {
-            msg = 'Successful replication of ' + info.docs_written +
-                ' docs at ' + info.start_time;
-            console.log(msg);
-            document.getElementById('message').innerHTML = msg;
-        }).on('error', function(err) {
-            console.log('error replicating: ' + err);
-            document.getElementById('message').innerHTML = 'error replicating: ' + err;
-        });
-    }
-
-    /**
-     * Generates a GUID (globally unique ID) string.
-     * @returns {String} The generated GUID.
-     * @example af8a8416-6e18-a307-bd9c-f2c947bbb3aa
-     * @author Slavik Meltser (slavik@meltser.info).
-     * @link http://slavik.meltser.info/?p=142
-     */
-    function guid() {
-        function _p8(s) {
-            var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-            return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
         }
-        return _p8() + _p8(true) + _p8(true) + _p8();
-    }
+
+        function watchError(err) {
+            document.getElementById('x').innerHTML = "permission denied...";
+            document.getElementById('y').innerHTML = "permission denied...";
+            alert('Error' + err.code + ' msg: ' + err.message);
+            document.getElementById('starter').disabled = false;
+        }
+
+        function stopWatch() {
+            document.getElementById('starter').disabled = false;
+            document.getElementById('stopper').disabled = true;
+            sync.cancel();
+
+            if (watchID)
+                navigator.geolocation.clearWatch(watchID);
+        }
+
+        function syncError(payload) {
+            console.log("Sync error: " + JSON.stringify(payload));
+            document.getElementById('message').innerHTML = "Sync error: " + JSON.stringify(payload);
+        }
     </script>
 
 </body>
