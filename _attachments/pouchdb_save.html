@@ -50,9 +50,7 @@
         var last_lat = 0;
         var watchID = null;
         var db = new PouchDB('locationdb');
-        // var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker';
-        var remotedb = 'https://mantonstilstinglingstrin:7d57e403b39d5e67e69323353d4e30af7caf553f@rajsingh.cloudant.com/locationtracker';
-        console.log('REMOTEDB: ' + remotedb);
+        var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtracker';
         PouchDB.sync(db, remotedb, {live:true,retry:true}, syncError);
 
         function startWatch() {

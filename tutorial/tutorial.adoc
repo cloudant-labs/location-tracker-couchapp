@@ -392,6 +392,7 @@ You see a panel like the one in Figure 3. Click  the *Generate API key* button o
 
 image::graphics/permissions_sm.png[title="Generating an API key"]
 
+
 PouchDB, along with the power of CouchDB replication, makes writing to the remote database incredibly simple. After this line where you initialize the local database: 
 
 [source,html]
@@ -399,7 +400,7 @@ PouchDB, along with the power of CouchDB replication, makes writing to the remot
 var db = new PouchDB('localdb'); 
 ----
 
-add a line initializing the remote Cloudant database, and a PouchDB function call to `sync` to automatically, keeping the local database in sync with the remote Cloudant one. 
+add a line initializing the remote Cloudant database, and a PouchDB function call to `sync` to automatically keep the local database in sync with the remote Cloudant one. 
 
 [source,html]
 ----
@@ -407,9 +408,8 @@ var remotedb = 'https://$APIKEY:$APIPASSWORD@$USERNAME.cloudant.com/locationtrac
 PouchDB.sync(db, remotedb, {live:true,retry:true});
 ----
  
-Then add the `sync` function shown in Listing 6 to your script. We also add some code to other functions to enable and disable the *Save* button when it makes sense. The code for the full HTML file is `_attachments/pouchdb_save.html` in the https://github.com/cloudant-labs/location-tracker-couchapp[GitHub repo for this tutorial].
+We also add some code to other functions to enable and disable the *Save* button when it makes sense. The code for the full HTML file is `_attachments/pouchdb_save.html` in the https://github.com/cloudant-labs/location-tracker-couchapp[GitHub repo for this tutorial].
 
-The `sync` function has one major PouchDB call, `replicate.to`. Its only argument is the database to replicate to, which we specified earlier. The  function that handles callbacks simply tells the user what is happening. 
 
 .Listing 6: Saving coordinates to the server
 _file: index.html_
@@ -426,7 +426,14 @@ _file: index.html_
     function watchError(err) {...}
     function doWatch(position) {...}
 
-    function stopWatch() {...}
+    function stopWatch() {
+		document.getElementById('starter').disabled = false;
+		document.getElementById('stopper').disabled = true;
+		sync.cancel();
+
+		if (watchID)
+			navigator.geolocation.clearWatch(watchID);
+	}
   </script>
 </body>
 </html>
