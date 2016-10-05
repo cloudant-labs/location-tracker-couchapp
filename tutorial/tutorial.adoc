@@ -433,7 +433,7 @@ _file: index.html_
 
       if (watchID)
         navigator.geolocation.clearWatch(watchID);
-	}
+    }
   </script>
 </body>
 </html>
