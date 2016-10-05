@@ -427,12 +427,12 @@ _file: index.html_
     function doWatch(position) {...}
 
     function stopWatch() {
-		document.getElementById('starter').disabled = false;
-		document.getElementById('stopper').disabled = true;
-		sync.cancel();
+      document.getElementById('starter').disabled = false;
+      document.getElementById('stopper').disabled = true;
+      sync.cancel();
 
-		if (watchID)
-			navigator.geolocation.clearWatch(watchID);
+      if (watchID)
+        navigator.geolocation.clearWatch(watchID);
 	}
   </script>
 </body>
